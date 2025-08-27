@@ -14,8 +14,8 @@ import { useBottomTabOverflow } from './ui/TabBarBackground';
 const HEADER_HEIGHT = 250;
 
 type Props = PropsWithChildren<{
-  headerImage: ReactElement;
-  headerBackgroundColor: { dark: string; light: string };
+  headerImage?: ReactElement;
+  headerBackgroundColor?: { dark: string; light: string };
 }>;
 
 export default function ParallaxScrollView({
@@ -54,7 +54,7 @@ export default function ParallaxScrollView({
         <Animated.View
           style={[
             styles.header,
-            { backgroundColor: headerBackgroundColor[colorScheme] },
+            // { backgroundColor: headerBackgroundColor[colorScheme] },
             headerAnimatedStyle,
           ]}>
           {headerImage}
@@ -67,16 +67,16 @@ export default function ParallaxScrollView({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
   },
   header: {
-    height: HEADER_HEIGHT,
-    overflow: 'hidden',
+    // height: HEADER_HEIGHT,
+    // overflow: 'hidden',
   },
   content: {
-    flex: 1,
-    padding: 32,
-    gap: 16,
-    overflow: 'hidden',
+    // flex: 1,
+    // padding: 32,
+    // gap: 16,
+    // overflow: 'hidden',
   },
 });
