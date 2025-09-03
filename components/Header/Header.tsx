@@ -2,12 +2,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from 'expo-router';
 import React from "react";
 import {
-    SafeAreaView,
     StyleSheet,
     Text,
     TextInput,
     TouchableOpacity,
-    View,
+    View
 } from "react-native";
 import HeaderMenu from "./HeaderMenu";
 
@@ -29,8 +28,7 @@ const Header: React.FC<HeaderProps> = ({
         router.push("/"); 
     };
   return (
-    <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
+    <View style={styles.container}>
             <TouchableOpacity style={styles.logo} onPress={backHome}>
                 <Text style={styles.logoText}>M</Text>
             </TouchableOpacity>
@@ -49,7 +47,6 @@ const Header: React.FC<HeaderProps> = ({
 
             <HeaderMenu username={"D"}></HeaderMenu>
         </View>
-    </SafeAreaView>
   );
 };
 

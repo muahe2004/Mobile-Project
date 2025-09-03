@@ -29,11 +29,5 @@ export default function RootLayout() {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    height: 60,
-    backgroundColor: 'red',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerTitle: { color: '#fff', fontSize: 18, fontWeight: '600' },
+  
 });

@@ -55,10 +55,6 @@ const Menu: React.FC<MenuProps> = ({ username, visible, onClose }) => {
                   <Text style={styles.menuText}>Trang cá nhân</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.menuItem} onPress={goToCourses}>
-                  <Text style={styles.menuText}>Tất cả khoá học</Text>
-              </TouchableOpacity>
-
               <TouchableOpacity style={styles.menuItem}>
                   <Text style={styles.menuText}>Tin tức</Text>
               </TouchableOpacity>
