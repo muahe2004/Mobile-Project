@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { SafeAreaView, StyleSheet } from 'react-native';
 
 import Header from '@/components/Header/Header';
 import ParallaxScrollView from '../../components/ParallaxScrollView';
@@ -6,10 +6,13 @@ import HomePage from '../modules/home';
 
 export default function HomeScreen() {
   return (
-    <ParallaxScrollView>
+    <SafeAreaView style={{flex: 1, backgroundColor: "#fff"}}>
       <Header title={'D'} username={'D'}></Header>
-      <HomePage></HomePage>
-    </ParallaxScrollView>
+
+      <ParallaxScrollView>
+        <HomePage></HomePage>
+      </ParallaxScrollView>
+    </SafeAreaView>
   );
 }
 

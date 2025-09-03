@@ -30,7 +30,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
   title,
   instructor,
   thumbnail,
-  price = "Free",
+  price,
   rating = 0,
   students,
   progress,
@@ -77,7 +77,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
         </View>
 
         <View style={styles.bottomRow}>
-          <Text style={styles.price}>{price}</Text>
+          <Text style={styles.price}>{price || "Free"}</Text>
 
           <View style={styles.actions}>
             {typeof progress === "number" ? (
