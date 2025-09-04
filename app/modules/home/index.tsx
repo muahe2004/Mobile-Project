@@ -61,7 +61,7 @@ const HomePage: React.FC = () => {
                 price={course.giaBan}
                 thumbnail={{
                   uri: course.hinhAnh
-                    ? course.hinhAnh.replace("localhost", "172.20.10.3")
+                    ? course.hinhAnh.replace("localhost", `${process.env.EXPO_PUBLIC_IPV4}`)
                     : undefined,
                 }}
                 onPress={() => router.push(`/course-details/${course.maKhoaHoc}`)}

@@ -41,6 +41,13 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="book.fill" color={color} />,
         }}
       />
+      <Tabs.Screen
+        name="course-details/[id]"
+        options={{
+          href: null, 
+          headerShown: false,
+        }}
+      />
     </Tabs>
   );
 }

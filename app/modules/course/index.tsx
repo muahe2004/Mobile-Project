@@ -38,12 +38,12 @@ const Courses: React.FC = () => {
                 price={course.giaBan}
                 thumbnail={{
                   uri: course.hinhAnh
-                    ? course.hinhAnh.replace("localhost", "172.20.10.3")
+                    ? course.hinhAnh.replace("localhost", `${process.env.EXPO_PUBLIC_IPV4}`)
                     : undefined,
                 }}
               />
             ) : (
-              <View key={colIndex} style={{ flex: 1 }} /> // fill ô trống
+              <View key={colIndex} style={{ flex: 1 }} /> 
             )
           )}
         </View>
