@@ -1,3 +1,4 @@
+import { colors } from "@/app/assets/styles/theme";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Dimensions, FlatList, Image, ScrollView, StyleSheet, View } from "react-native";
@@ -82,8 +83,8 @@ export default HomePage;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f8f8",
-    paddingBottom: 30,
+    backgroundColor: colors.background,
+    paddingBottom: 80,
   },
   flatList: {
   },

@@ -1,5 +1,7 @@
+import { colors } from "@/app/assets/styles/theme";
+import Button from "@/components/Button/Button";
 import React from "react";
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 
 type Course = {
   maKhoaHoc: string;
@@ -12,12 +14,11 @@ type Course = {
 const CourseDetails: React.FC<{ course: Course }> = ({ course }) => {
   return (
     <ScrollView style={styles.container}>
-      {/* Ảnh khóa học */}
       <Image
         source={{
           uri: course.hinhAnh
             ? course.hinhAnh.replace("localhost", `${process.env.EXPO_PUBLIC_IPV4}`)
-            : "https://via.placeholder.com/400x200.png?text=No+Image",
+            : "../../../assets/images/Nhapmon_course.png",
         }}
         style={styles.thumbnail}
       />
@@ -26,13 +27,9 @@ const CourseDetails: React.FC<{ course: Course }> = ({ course }) => {
       <View style={styles.content}>
         <Text style={styles.title}>{course.tenKhoaHoc}</Text>
         <Text style={styles.price}>{course.giaBan.toLocaleString()} VND</Text>
-        <Text style={styles.description}>{course.moTa}</Text>
-      </View>
 
-      {/* Button */}
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Đăng ký ngay</Text>
-      </TouchableOpacity>
+        <Button content="ĐĂNG KÝ" onPress={() => console.log("Register")}/>
+      </View>      
     </ScrollView>
   );
 };
@@ -50,7 +47,7 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   content: {
-    padding: 16,
+    padding: 12,
   },
   title: {
     fontSize: 22,
@@ -59,19 +56,14 @@ const styles = StyleSheet.create({
   },
   price: {
     fontSize: 18,
-    fontWeight: "600",
-    color: "#e91e63",
-    marginBottom: 12,
-  },
-  description: {
-    fontSize: 16,
-    lineHeight: 22,
-    color: "#444",
+    fontWeight: "700",
+    color: "orange",
+    marginBottom: 8,
   },
   button: {
-    margin: 16,
+    marginHorizontal: 12,
     padding: 16,
-    backgroundColor: "#2196f3",
+    backgroundColor: colors.primary,
     borderRadius: 12,
     alignItems: "center",
   },

@@ -1,3 +1,4 @@
+import { colors } from "@/app/assets/styles/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from 'expo-router';
 import React from "react";
@@ -54,7 +55,7 @@ export default Header;
 
 const styles = StyleSheet.create({
     logo: {
-        backgroundColor: "#343D60",
+        backgroundColor: colors.primary,
         borderRadius: 4,
         height: 36,
         width: 36,
@@ -83,20 +84,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 18,
         fontWeight: "600",
-        color: "#333",
-    },
-    avatar: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        backgroundColor: "#4e73df", 
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    avatarText: {
-        color: "#fff",
-        fontSize: 16,
-        fontWeight: "600",
+        color: colors.text,
     },
     searchContainer: {
         flexDirection: "row",

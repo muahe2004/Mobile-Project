@@ -1,3 +1,4 @@
+import { colors } from '@/app/assets/styles/theme';
 import { router } from 'expo-router';
 import React, { useState } from "react";
 import {
@@ -72,7 +73,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: "#343D60",
+    backgroundColor: colors.primary,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -112,6 +113,6 @@ const styles = StyleSheet.create({
   },
   menuText: {
     fontSize: 14,
-    color: "#333",
+    color: colors.text,
   },
 });
