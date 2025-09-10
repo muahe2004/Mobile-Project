@@ -35,7 +35,6 @@ export const DropDownDetails: React.FC<DropDownDetailsProps> = ({ maKhoaHoc }) =
         fetch(`${API_URL}/api/lessons/selection-lessons/${maKhoaHoc}`)
             .then((res) => res.json())
             .then((data) => {
-                console.log(data);
                 setLessons(data);
             }) 
             .catch((err) => console.log("Error fetching courses:", err));

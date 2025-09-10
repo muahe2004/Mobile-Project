@@ -17,8 +17,6 @@ export interface Courses {
   maGiangVien: string;
 }
 
-
-
 function CourseDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [course, setCourse] = useState<Courses | null>(null);
@@ -29,15 +27,13 @@ function CourseDetailsScreen() {
     fetch(`${API_URL}/api/courses/${id}`)
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setCourse(data);
       }) 
       .catch((err) => console.log("Error fetching courses:", err));
   }, [id]);
 
-
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff", marginBottom: 100 }}>
       <Stack.Screen
       options={{
         headerShown: false, 
