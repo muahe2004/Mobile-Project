@@ -1,6 +1,7 @@
 import { Stack, useLocalSearchParams } from "expo-router";
 import { SafeAreaView, StyleSheet } from "react-native";
 
+import DropDownDetails from "@/app/modules/course/components/DropDownDetails";
 import Header from "@/components/Header/Header";
 import { useEffect, useState } from "react";
 import ParallaxScrollView from "../../../components/ParallaxScrollView";
@@ -54,6 +55,10 @@ function CourseDetailsScreen() {
             hinhAnh: course?.hinhAnh,
           }}
         />
+
+        <DropDownDetails
+          maKhoaHoc={id}
+        ></DropDownDetails>
       </ParallaxScrollView>
     </SafeAreaView>
   );
