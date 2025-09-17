@@ -1,7 +1,8 @@
+import { useUserInfo } from "@/hooks/useGetUserInfor";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from 'expo-router';
 import * as SecureStore from "expo-secure-store";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
     StyleSheet,
     Text,
@@ -19,17 +20,6 @@ type HeaderProps = {
   onProfilePress?: () => void;
 };
 
-export interface UserInfo {
-  anhDaiDien: string;
-  email: string;
-  github?: string | null;
-  loaiNguoiDung: string;
-  maNguoiDung: string;
-  soDienThoai?: string | null;
-  soDu: string; 
-  tenNguoiDung: string;
-}
-
 const Header: React.FC<HeaderProps> = ({
   title,
   username,
@@ -37,28 +27,8 @@ const Header: React.FC<HeaderProps> = ({
   onProfilePress,
 }) => {
     const initial = username ? username.charAt(0).toUpperCase() : "?";
-        const backHome = () => {
-            router.push("/"); 
-        };
-
-    const [user, setUser] = useState<UserInfo | null>(null);
-
-    useEffect(() => {
-        const getUserInfo = async () => {
-            try {
-                const userStr = await SecureStore.getItemAsync("userInfo");
-                if (userStr) {
-                    const userData = JSON.parse(userStr);
-                    setUser(userData);
-                    // console.error("User info from SecureStore:", userData);
-                }
-            } catch (err) {
-                console.error("Error reading userInfo:", err);
-            }
-        };
-
-        getUserInfo();
-    }, []);
+    const backHome = () => {router.push("/")};
+    const { user, loading } = useUserInfo();
 
     const API_URL = process.env.EXPO_PUBLIC_API_KEY;
       

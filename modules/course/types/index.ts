@@ -21,3 +21,13 @@ export interface ListQuestions {
   noiDung: string;
   dapAn: Answer[];
 }
+
+export interface Courses {
+  maKhoaHoc: string;
+  tenKhoaHoc: string;
+  moTaKhoaHoc: string;
+  hinhAnh: string;
+  doKho: string;
+  giaBan: number;
+  maGiangVien: string;
+}

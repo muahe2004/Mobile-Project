@@ -2,20 +2,11 @@ import { Stack, useLocalSearchParams } from "expo-router";
 import { SafeAreaView, StyleSheet } from "react-native";
 
 import Header from "@/components/Header/Header";
+import { Courses } from "@/modules/course/types";
 import { useEffect, useState } from "react";
 import ParallaxScrollView from "../../../components/ParallaxScrollView";
 import DropDownDetails from "../../../modules/course/components/DropDownDetails";
 import CourseDetails from "../../../modules/course/views/CourseDetails";
-
-export interface Courses {
-  maKhoaHoc: string;
-  tenKhoaHoc: string;
-  moTaKhoaHoc: string;
-  hinhAnh: string;
-  doKho: string;
-  giaBan: number;
-  maGiangVien: string;
-}
 
 export default function CourseDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
