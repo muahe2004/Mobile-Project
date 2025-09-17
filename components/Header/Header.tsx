@@ -1,7 +1,7 @@
-import { colors } from "@/app/assets/styles/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from 'expo-router';
-import React from "react";
+import * as SecureStore from "expo-secure-store";
+import React, { useEffect } from "react";
 import {
     StyleSheet,
     Text,
@@ -9,6 +9,7 @@ import {
     TouchableOpacity,
     View
 } from "react-native";
+import { colors } from "../../assets/styles/theme";
 import HeaderMenu from "./HeaderMenu";
 
 type HeaderProps = {
@@ -24,12 +25,48 @@ const Header: React.FC<HeaderProps> = ({
   onBackPress,
   onProfilePress,
 }) => {
-  const initial = username ? username.charAt(0).toUpperCase() : "?";
-    const backHome = () => {
-        router.push("/"); 
-    };
-  return (
-    <View style={styles.container}>
+    const initial = username ? username.charAt(0).toUpperCase() : "?";
+        const backHome = () => {
+            router.push("/"); 
+        };
+
+    const API_URL = process.env.EXPO_PUBLIC_API_KEY;
+      
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+            const token = await SecureStore.getItemAsync("token");
+
+            if (!token) {
+                console.log("Chưa có token, cần login trước");
+                return;
+            }
+
+            const res = await fetch(`${API_URL}/me`, {
+                method: "GET",
+                headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                },
+            });
+
+            if (!res.ok) {
+                throw new Error("Request failed");
+            }
+
+            const data = await res.json();
+            console.log("User info:", data);
+
+            } catch (err) {
+            console.log("Error fetching user:", err);
+            }
+        };
+
+        fetchUser();
+        }, []);
+
+    return (
+        <View style={styles.container}>
             <TouchableOpacity style={styles.logo} onPress={backHome}>
                 <Text style={styles.logoText}>M</Text>
             </TouchableOpacity>
@@ -46,9 +83,9 @@ const Header: React.FC<HeaderProps> = ({
             <Ionicons name="notifications-outline" size={24} color="#333" />
             </TouchableOpacity>
 
-            <HeaderMenu username={"D"}></HeaderMenu>
+            <HeaderMenu username={"Minh"}></HeaderMenu>
         </View>
-  );
+    );
 };
 
 export default Header;

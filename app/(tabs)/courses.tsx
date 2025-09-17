@@ -2,9 +2,9 @@ import { SafeAreaView, StyleSheet } from 'react-native';
 
 import Header from '@/components/Header/Header';
 import ParallaxScrollView from '../../components/ParallaxScrollView';
-import Courses from '../modules/course';
+import Courses from '../../modules/course';
 
-export default function HomeScreen() {
+export default function CourseScreen() {
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: "#fff"}}>
       <Header title={'D'} username={'D'}></Header>

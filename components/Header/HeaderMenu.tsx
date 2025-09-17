@@ -1,4 +1,3 @@
-import { colors } from '@/app/assets/styles/theme';
 import { router } from 'expo-router';
 import React, { useState } from "react";
 import {
@@ -10,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { colors } from '../../assets/styles/theme';
 
 type HeaderMenuProps = {
     username: string;
@@ -44,7 +44,7 @@ type MenuProps = {
 const Menu: React.FC<MenuProps> = ({ username, visible, onClose }) => {
     const goToCourses = () => {
       onClose();     
-      router.push("/modules/course"); 
+      router.push("../../modules/courses"); 
     };
     return (
       <Modal visible={visible} transparent onRequestClose={onClose}>

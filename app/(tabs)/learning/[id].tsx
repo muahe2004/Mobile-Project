@@ -1,9 +1,9 @@
-import { colors } from "@/app/assets/styles/theme";
 import Header from "@/components/Header/Header";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { SafeAreaView, StyleSheet, Text, View } from "react-native";
 import WebView from "react-native-webview";
+import { colors } from "../../../assets/styles/theme";
 
 export interface Lectures {
   maBaiHoc: string;
@@ -15,7 +15,7 @@ export interface Lectures {
   maKhoaHoc: string;
 }
 
-function LearningScreen() {
+export default function LearningScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const maBaiHoc = "BH001";
 
@@ -81,5 +81,3 @@ const styles = StyleSheet.create({
         padding: 12
     }
 });
-
-export default LearningScreen;

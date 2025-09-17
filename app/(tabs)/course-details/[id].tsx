@@ -1,11 +1,11 @@
 import { Stack, useLocalSearchParams } from "expo-router";
 import { SafeAreaView, StyleSheet } from "react-native";
 
-import DropDownDetails from "@/app/modules/course/components/DropDownDetails";
 import Header from "@/components/Header/Header";
 import { useEffect, useState } from "react";
 import ParallaxScrollView from "../../../components/ParallaxScrollView";
-import CourseDetails from "../../modules/course/views/CourseDetails";
+import DropDownDetails from "../../../modules/course/components/DropDownDetails";
+import CourseDetails from "../../../modules/course/views/CourseDetails";
 
 export interface Courses {
   maKhoaHoc: string;
@@ -17,7 +17,7 @@ export interface Courses {
   maGiangVien: string;
 }
 
-function CourseDetailsScreen() {
+export default function CourseDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [course, setCourse] = useState<Courses | null>(null);
 
@@ -78,5 +78,3 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
 });
-
-export default CourseDetailsScreen;

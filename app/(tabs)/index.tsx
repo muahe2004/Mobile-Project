@@ -2,7 +2,7 @@ import { SafeAreaView, StyleSheet } from 'react-native';
 
 import Header from '@/components/Header/Header';
 import ParallaxScrollView from '../../components/ParallaxScrollView';
-import HomePage from '../modules/home';
+import HomePage from '../../modules/home';
 
 export default function HomeScreen() {
   return (

@@ -1,7 +1,7 @@
-import { colors } from "@/app/assets/styles/theme";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Dimensions, FlatList, Image, ScrollView, StyleSheet, View } from "react-native";
+import { colors } from "../../assets/styles/theme";
 import CourseCard from "../course/components/CourseCard";
 
 const { width } = Dimensions.get("window");
@@ -11,7 +11,7 @@ const carouselData = [
   { id: "2", image: require("../../assets/images/utehy2.jpg") },
 ];
 
-const HomePage: React.FC = () => {
+export default function HomePage() {
   const [courses, setCourses] = useState<any[]>([]);
   const API_URL = process.env.EXPO_PUBLIC_API_KEY;
 
@@ -77,8 +77,6 @@ const HomePage: React.FC = () => {
     </ScrollView>
   );
 };
-
-export default HomePage;
 
 const styles = StyleSheet.create({
   container: {

@@ -1,7 +1,7 @@
-import { colors } from "@/app/assets/styles/theme";
 import Button from "@/components/Button/Button";
 import React from "react";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import { colors } from "../../../assets/styles/theme";
 
 type Course = {
   maKhoaHoc: string;
