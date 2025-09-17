@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
 import CourseCard from "./components/CourseCard";
@@ -14,7 +15,7 @@ const Courses: React.FC = () => {
       .then((data) => {
         setCourses(data.data);
       }) 
-      .catch((err) => console.log("Error fetching courses:", err));
+      .catch((err) => console.error("Error fetching courses:", err));
   }, []);
 
   const chunkedCourses = [];
@@ -41,6 +42,7 @@ const Courses: React.FC = () => {
                     ? course.hinhAnh.replace("localhost", `${process.env.EXPO_PUBLIC_IPV4}`)
                     : undefined,
                 }}
+                onPress={() => router.push(`/course-details/${course.maKhoaHoc}`)}
               />
             ) : (
               <View key={colIndex} style={{ flex: 1 }} /> 

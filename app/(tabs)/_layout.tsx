@@ -51,8 +51,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="learning/[id]"
         options={{
-          // href: null, 
-          // headerShown: false,
+          href: null, 
+          headerShown: false,
         }}
       />
       <Tabs.Screen

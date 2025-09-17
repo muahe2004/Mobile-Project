@@ -77,7 +77,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
         </View>
 
         <View style={styles.bottomRow}>
-          <Text style={styles.price}>{price || "Free"}</Text>
+          <Text style={styles.price}>{price || "Free"} VNĐ</Text>
 
           <View style={styles.actions}>
             {typeof progress === "number" ? (

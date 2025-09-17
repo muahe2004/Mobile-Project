@@ -1,4 +1,5 @@
 import { AntDesign } from "@expo/vector-icons";
+import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
     StyleSheet,
@@ -61,7 +62,7 @@ export const DropDownDetails: React.FC<DropDownDetailsProps> = ({ maKhoaHoc }) =
                 [maChuongHoc]: data,
             }));
         } catch (err) {
-            console.log("Error fetching lectures:", err);
+            console.error("Error fetching lectures:", err);
         }
     };
 
@@ -91,9 +92,13 @@ export const DropDownDetails: React.FC<DropDownDetailsProps> = ({ maKhoaHoc }) =
                             <View style={styles.dropDownDetailsContent}>
                                 {lectures.length > 0 ? (
                                     lectures.map((lec, lecIndex) => (
-                                        <TouchableOpacity style={styles.lectureItem}>
-                                            <Text key={lec.maBaiHoc} >
-                                                {index+1}.{lecIndex+1}. {lec.tenBaiHoc}
+                                        <TouchableOpacity
+                                            key={lec.maBaiHoc}
+                                            style={styles.lectureItem}
+                                            onPress={() => router.push(`/learning/${lec.maBaiHoc}`)}
+                                        >
+                                            <Text>
+                                            {index + 1}.{lecIndex + 1}. {lec.tenBaiHoc}
                                             </Text>
                                         </TouchableOpacity>
                                     ))

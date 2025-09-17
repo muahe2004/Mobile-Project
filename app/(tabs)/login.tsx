@@ -35,7 +35,6 @@ export default function LoginScreen() {
             const data = await res.json();
 
             if (res.ok) {
-                console.log(data.token);
                 await SecureStore.setItemAsync("token", data.token);
                 await fetchUser();
                 await setEmail("");
@@ -54,7 +53,7 @@ export default function LoginScreen() {
         const token = await SecureStore.getItemAsync("token");
 
         if (!token) {
-            console.log("Chưa có token, cần login trước");
+            console.error("Chưa có token, cần login trước");
             return;
         }
 
@@ -68,14 +67,15 @@ export default function LoginScreen() {
 
         if (res.ok) {
             const data = await res.json();
-        console.log("User info:", data);
+            const { matKhau, ...userWithoutPassword } = data;
+            await SecureStore.setItemAsync("userInfo", JSON.stringify(userWithoutPassword));
         } else {
             throw new Error("Request failed");
 
         }
 
         } catch (err) {
-        console.log("Error fetching user:", err);
+            console.log("Error fetching user:", err);
         }
     };
 

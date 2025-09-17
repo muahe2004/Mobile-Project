@@ -29,7 +29,7 @@ export default function CourseDetailsScreen() {
       .then((data) => {
         setCourse(data);
       }) 
-      .catch((err) => console.log("Error fetching courses:", err));
+      .catch((err) => console.error("Error fetching courses:", err));
   }, [id]);
 
   return (

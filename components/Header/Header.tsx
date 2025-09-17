@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from 'expo-router';
 import * as SecureStore from "expo-secure-store";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
     StyleSheet,
     Text,
@@ -19,6 +19,17 @@ type HeaderProps = {
   onProfilePress?: () => void;
 };
 
+export interface UserInfo {
+  anhDaiDien: string;
+  email: string;
+  github?: string | null;
+  loaiNguoiDung: string;
+  maNguoiDung: string;
+  soDienThoai?: string | null;
+  soDu: string; 
+  tenNguoiDung: string;
+}
+
 const Header: React.FC<HeaderProps> = ({
   title,
   username,
@@ -30,6 +41,25 @@ const Header: React.FC<HeaderProps> = ({
             router.push("/"); 
         };
 
+    const [user, setUser] = useState<UserInfo | null>(null);
+
+    useEffect(() => {
+        const getUserInfo = async () => {
+            try {
+                const userStr = await SecureStore.getItemAsync("userInfo");
+                if (userStr) {
+                    const userData = JSON.parse(userStr);
+                    setUser(userData);
+                    // console.error("User info from SecureStore:", userData);
+                }
+            } catch (err) {
+                console.error("Error reading userInfo:", err);
+            }
+        };
+
+        getUserInfo();
+    }, []);
+
     const API_URL = process.env.EXPO_PUBLIC_API_KEY;
       
     useEffect(() => {
@@ -38,7 +68,7 @@ const Header: React.FC<HeaderProps> = ({
             const token = await SecureStore.getItemAsync("token");
 
             if (!token) {
-                console.log("Chưa có token, cần login trước");
+                console.error("Chưa có token, cần login trước");
                 return;
             }
 
@@ -55,10 +85,9 @@ const Header: React.FC<HeaderProps> = ({
             }
 
             const data = await res.json();
-            console.log("User info:", data);
 
             } catch (err) {
-            console.log("Error fetching user:", err);
+                console.log("Error fetching user:", err);
             }
         };
 
@@ -83,7 +112,7 @@ const Header: React.FC<HeaderProps> = ({
             <Ionicons name="notifications-outline" size={24} color="#333" />
             </TouchableOpacity>
 
-            <HeaderMenu username={"Minh"}></HeaderMenu>
+            <HeaderMenu username={user?.tenNguoiDung || ""}></HeaderMenu>
         </View>
     );
 };
