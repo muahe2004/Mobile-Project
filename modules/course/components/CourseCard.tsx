@@ -1,4 +1,3 @@
-// src/components/CourseCard.tsx
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import {
@@ -16,11 +15,11 @@ type CourseCardProps = {
   id?: string | number;
   title: string;
   instructor?: string;
-  thumbnail?: any; // require(...) hoặc { uri: '' }
-  price?: string; // "Free" hoặc "₫199.000"
-  rating?: number; // 0-5
+  thumbnail?: any;
+  price?: string; 
+  rating?: number;
   students?: number;
-  progress?: number; // 0-100 (nếu là khóa đã đăng ký)
+  progress?: number;
   onPress?: (e?: GestureResponderEvent) => void;
   onBookmark?: (e?: GestureResponderEvent) => void;
   style?: object;
@@ -77,7 +76,13 @@ const CourseCard: React.FC<CourseCardProps> = ({
         </View>
 
         <View style={styles.bottomRow}>
-          <Text style={styles.price}>{price || "Free"} VNĐ</Text>
+          <Text style={styles.price}>
+            {price
+              ? parseFloat(price)       
+                  .toLocaleString("vi-VN")
+              : "Free"} VNĐ
+          </Text>
+
 
           <View style={styles.actions}>
             {typeof progress === "number" ? (
@@ -100,13 +105,13 @@ export default CourseCard;
 
 const styles = StyleSheet.create({
    card: {
-    flex: 1, // chiếm 1/2 width
+    flex: 1, 
     margin: 8,
     backgroundColor: "#fff",
     borderRadius: 8,
     overflow: "hidden",
-    elevation: 3, // android shadow
-    shadowColor: "#000", // ios shadow
+    elevation: 3,
+    shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
   },

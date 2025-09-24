@@ -38,7 +38,7 @@ const Courses: React.FC = () => {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: "#fafafa", marginBottom: 80 }}>
             <Stack.Screen options={{ headerShown: false}}/>
-            <Header title={"Chi tiết khóa học"} username={"User"} />
+            <Header/>
 
             <ScrollView>
                 {chunkedCourses.map((row, rowIndex) => (

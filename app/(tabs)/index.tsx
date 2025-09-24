@@ -7,7 +7,7 @@ import HomePage from '../../modules/home';
 export default function HomeScreen() {
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: "#fff"}}>
-      <Header title={'D'} username={'D'}></Header>
+      <Header></Header>
 
       <ParallaxScrollView>
         <HomePage></HomePage>

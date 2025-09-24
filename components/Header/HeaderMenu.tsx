@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
 import React, { useState } from "react";
 import {
   Modal,
@@ -12,60 +13,83 @@ import {
 import { colors } from '../../assets/styles/theme';
 
 type HeaderMenuProps = {
-    username: string;
+  username: string;
+  onLogout: () => void; // callback từ Header
 };
 
-const HeaderMenu: React.FC<HeaderMenuProps> = ({ username }) => {
-    const [visible, setVisible] = useState(false);
+const HeaderMenu: React.FC<HeaderMenuProps> = ({ username, onLogout }) => {
+  const [visible, setVisible] = useState(false);
+  const initial = username ? username.charAt(0).toUpperCase() : "?";
 
-    const initial = username ? username.charAt(0).toUpperCase() : "?";
+  return (
+    <SafeAreaView>
+      <TouchableOpacity onPress={() => setVisible(true)} style={styles.avatar}>
+        <Text style={styles.avatarText}>{initial}</Text>
+      </TouchableOpacity>
 
-    return (
-        <SafeAreaView>
-        {/* Avatar mở menu */}
-        <TouchableOpacity onPress={() => setVisible(true)} style={styles.avatar}>
-            <Text style={styles.avatarText}>{initial}</Text>
-        </TouchableOpacity>
-
-        {/* Gọi Menu riêng */}
-        <Menu username={username} visible={visible} onClose={() => setVisible(false)} />
-        </SafeAreaView>
-    );
+      <Menu
+        username={username}
+        visible={visible}
+        onClose={() => setVisible(false)}
+        onLogout={onLogout}
+      />
+    </SafeAreaView>
+  );
 };
 
 export default HeaderMenu;
 
 type MenuProps = {
-    username: string;
-    visible: boolean;
-    onClose: () => void;
+  username: string;
+  visible: boolean;
+  onClose: () => void;
+  onLogout: () => void;
 };
 
-const Menu: React.FC<MenuProps> = ({ username, visible, onClose }) => {
-    const goToCourses = () => {
-      onClose();     
-      router.push("../../modules/courses"); 
-    };
-    return (
-      <Modal visible={visible} transparent onRequestClose={onClose}>
-          <Pressable style={styles.overlay} onPress={onClose} />
+const Menu: React.FC<MenuProps> = ({ username, visible, onClose, onLogout }) => {
 
-          <View style={styles.menu}>
+  const goToCourses = () => {
+    onClose();
+    router.push("../../modules/courses");
+  };
 
-              <TouchableOpacity style={styles.menuItem}>
-                  <Text style={styles.menuText}>Trang cá nhân</Text>
-              </TouchableOpacity>
+  const handleLogout = async () => {
+    try {
+      await SecureStore.deleteItemAsync("token");
+      await SecureStore.deleteItemAsync("userInfo");
 
-              <TouchableOpacity style={styles.menuItem}>
-                  <Text style={styles.menuText}>Tin tức</Text>
-              </TouchableOpacity>
+      // Reset state user ở Header
+      onLogout();
 
-              <TouchableOpacity style={styles.menuItem}>
-                  <Text style={styles.menuText}>Đăng xuất</Text>
-              </TouchableOpacity>
-          </View>
-      </Modal>
-    );
+      // Đóng modal
+      onClose();
+
+      // Reload trang hiện tại để Header kiểm tra lại user
+      router.replace("/login"); // thay vì router.replace("/login")
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  };
+
+
+  return (
+    <Modal visible={visible} transparent onRequestClose={onClose}>
+      <Pressable style={styles.overlay} onPress={onClose} />
+      <View style={styles.menu}>
+        <TouchableOpacity style={styles.menuItem} onPress={goToCourses}>
+          <Text style={styles.menuText}>Trang cá nhân</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.menuItem}>
+          <Text style={styles.menuText}>Tin tức</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
+          <Text style={styles.menuText}>Đăng xuất</Text>
+        </TouchableOpacity>
+      </View>
+    </Modal>
+  );
 };
 
 const styles = StyleSheet.create({
@@ -77,15 +101,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  avatarText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.3)",
-  },
+  avatarText: { color: "#fff", fontSize: 16, fontWeight: "600" },
+  overlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.3)" },
   menu: {
     position: "absolute",
     right: 10,
@@ -99,20 +116,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 6,
   },
-  menuTitle: {
-    fontWeight: "600",
-    marginBottom: 10,
-    fontSize: 16,
-    color: "#333",
-  },
-  menuItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 8,
-    gap: 8,
-  },
-  menuText: {
-    fontSize: 14,
-    color: colors.text,
-  },
+  menuItem: { flexDirection: "row", alignItems: "center", paddingVertical: 8, gap: 8 },
+  menuText: { fontSize: 14, color: colors.text },
 });

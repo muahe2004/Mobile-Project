@@ -1,6 +1,7 @@
 import Button from "@/components/Button/Button";
+import { useUserInfo } from "@/hooks/useGetUserInfor";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router } from 'expo-router';
 import * as SecureStore from "expo-secure-store";
 import React, { useState } from "react";
 import {
@@ -21,14 +22,13 @@ export default function LoginScreen() {
     const [secureText, setSecureText] = useState(true);
 
     const API_URL = process.env.EXPO_PUBLIC_API_KEY;
+    const { setUser } = useUserInfo(); 
 
     const handleLogin = async () => {
         try {
             const res = await fetch(`${API_URL}/login`, {  
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, matKhau }),
             });
 
@@ -36,46 +36,37 @@ export default function LoginScreen() {
 
             if (res.ok) {
                 await SecureStore.setItemAsync("token", data.token);
-                await fetchUser();
-                await setEmail("");
-                await setMatKhau("");
-                await router.replace("/"); 
+
+                const userRes = await fetch(`${API_URL}/api/me`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${data.token}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+
+                if (userRes.ok) {
+                    const userData = await userRes.json();
+                    const { matKhau, ...userWithoutPassword } = userData;
+
+                    await SecureStore.setItemAsync(
+                        "userInfo",
+                        JSON.stringify(userWithoutPassword)
+                    );
+                    setUser(userWithoutPassword);
+                    setEmail("");
+                    setMatKhau("");
+
+                    router.replace("/");
+                    // await Updates.reloadAsync();
+                } else {
+                    console.error("Fetching user failed");
+                }
             } else {
                 console.error("Login failed");
             }
         } catch (error) {
-            console.error("Login failed");
-        }
-    };
-
-    const fetchUser = async () => {
-        try {
-        const token = await SecureStore.getItemAsync("token");
-
-        if (!token) {
-            console.error("Chưa có token, cần login trước");
-            return;
-        }
-
-        const res = await fetch(`${API_URL}/api/me`, {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-        });
-
-        if (res.ok) {
-            const data = await res.json();
-            const { matKhau, ...userWithoutPassword } = data;
-            await SecureStore.setItemAsync("userInfo", JSON.stringify(userWithoutPassword));
-        } else {
-            throw new Error("Request failed");
-
-        }
-
-        } catch (err) {
-            console.log("Error fetching user:", err);
+            console.error("Login failed:", error);
         }
     };
 
@@ -85,41 +76,41 @@ export default function LoginScreen() {
                 <Text style={styles.title}>Đăng nhập</Text>
 
                 <View style={styles.form}>
-                <TextInput
-                    style={styles.input}
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                    placeholder="Email"
-                    placeholderTextColor="#ccc"
-                />
-
-                <View style={styles.passwordContainer}>
                     <TextInput
-                    style={styles.inputPassword}
-                    value={matKhau}
-                    onChangeText={setMatKhau}
-                    secureTextEntry={secureText}
-                    placeholder="Mật khẩu"
-                    placeholderTextColor="#ccc"
+                        style={styles.input}
+                        value={email}
+                        onChangeText={setEmail}
+                        keyboardType="email-address"
+                        placeholder="Email"
+                        placeholderTextColor="#ccc"
                     />
-                    <TouchableOpacity
-                    style={styles.icon}
-                    onPress={() => setSecureText(!secureText)}
-                    >
-                    <Ionicons
-                        name={secureText ? "eye-off" : "eye"}
-                        size={22}
-                        color="#666"
-                    />
+
+                    <View style={styles.passwordContainer}>
+                        <TextInput
+                            style={styles.inputPassword}
+                            value={matKhau}
+                            onChangeText={setMatKhau}
+                            secureTextEntry={secureText}
+                            placeholder="Mật khẩu"
+                            placeholderTextColor="#ccc"
+                        />
+                        <TouchableOpacity
+                            style={styles.icon}
+                            onPress={() => setSecureText(!secureText)}
+                        >
+                            <Ionicons
+                                name={secureText ? "eye-off" : "eye"}
+                                size={22}
+                                color="#666"
+                            />
+                        </TouchableOpacity>
+                    </View>
+
+                    <Button content="ĐĂNG NHẬP" onPress={handleLogin} />
+
+                    <TouchableOpacity>
+                        <Text style={styles.link}>Quên mật khẩu ?</Text>
                     </TouchableOpacity>
-                </View>
-
-                <Button content="ĐĂNG NHẬP" onPress={handleLogin} />
-
-                <TouchableOpacity>
-                    <Text style={styles.link}>Quên mật khẩu ?</Text>
-                </TouchableOpacity>
                 </View>
             </SafeAreaView>
         </TouchableWithoutFeedback>

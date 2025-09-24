@@ -1,8 +1,7 @@
 import { useUserInfo } from "@/hooks/useGetUserInfor";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from 'expo-router';
-import * as SecureStore from "expo-secure-store";
-import React, { useEffect } from "react";
+import React from "react";
 import {
     StyleSheet,
     Text,
@@ -11,58 +10,12 @@ import {
     View
 } from "react-native";
 import { colors } from "../../assets/styles/theme";
+import Button from "../Button/Button";
 import HeaderMenu from "./HeaderMenu";
 
-type HeaderProps = {
-  title: string;
-  username: string;
-  onBackPress?: () => void;
-  onProfilePress?: () => void;
-};
-
-const Header: React.FC<HeaderProps> = ({
-  title,
-  username,
-  onBackPress,
-  onProfilePress,
-}) => {
-    const initial = username ? username.charAt(0).toUpperCase() : "?";
-    const backHome = () => {router.push("/")};
-    const { user, loading } = useUserInfo();
-
-    const API_URL = process.env.EXPO_PUBLIC_API_KEY;
-      
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-            const token = await SecureStore.getItemAsync("token");
-
-            if (!token) {
-                console.error("Chưa có token, cần login trước");
-                return;
-            }
-
-            const res = await fetch(`${API_URL}/me`, {
-                method: "GET",
-                headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json",
-                },
-            });
-
-            if (!res.ok) {
-                throw new Error("Request failed");
-            }
-
-            const data = await res.json();
-
-            } catch (err) {
-                console.log("Error fetching user:", err);
-            }
-        };
-
-        fetchUser();
-        }, []);
+const Header: React.FC = () => {
+    const backHome = () => router.push("/");
+    const { user, loading, clearUser } = useUserInfo();
 
     return (
         <View style={styles.container}>
@@ -79,10 +32,17 @@ const Header: React.FC<HeaderProps> = ({
             </View>
 
             <TouchableOpacity>
-            <Ionicons name="notifications-outline" size={24} color="#333" />
+                <Ionicons name="notifications-outline" size={24} color="#333" />
             </TouchableOpacity>
 
-            <HeaderMenu username={user?.tenNguoiDung || ""}></HeaderMenu>
+            {user ? (
+                <HeaderMenu
+                    username={user.tenNguoiDung || ""}
+                    onLogout={clearUser} // truyền callback từ hook
+                />
+            ) : (
+                <Button content={"O"} />
+            )}
         </View>
     );
 };
@@ -90,24 +50,6 @@ const Header: React.FC<HeaderProps> = ({
 export default Header;
 
 const styles = StyleSheet.create({
-    logo: {
-        backgroundColor: colors.primary,
-        borderRadius: 4,
-        height: 36,
-        width: 36,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center"
-    },
-    logoText: {
-        color: "#fff",
-        fontSize: 16,
-        fontWeight: "700",
-        letterSpacing: 1,
-    },
-    safeArea: {
-        backgroundColor: "#fff",
-    },
     container: {
         height: 56,
         flexDirection: "row",
@@ -117,11 +59,16 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: "#eee",
     },
-    title: {
-        fontSize: 18,
-        fontWeight: "600",
-        color: colors.text,
+    logo: {
+        backgroundColor: colors.primary,
+        borderRadius: 4,
+        height: 36,
+        width: 36,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center"
     },
+    logoText: { color: "#fff", fontSize: 16, fontWeight: "700", letterSpacing: 1 },
     searchContainer: {
         flexDirection: "row",
         alignItems: "center",
@@ -133,11 +80,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "#ccc",
     },
-    icon: {
-        marginRight: 6,
-    },
-    textInput: {
-        flex: 1,            
-        fontSize: 16,
-    },
+    icon: { marginRight: 6 },
+    textInput: { flex: 1, fontSize: 16 },
 });

@@ -55,7 +55,7 @@ export default function LearningScreen() {
                 headerShown: false,
                 }}
             />
-            <Header title={"Trang học bài"} username={"User"} />
+            <Header/>
 
             <ScrollView>
                 {lecture && (

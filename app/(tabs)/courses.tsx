@@ -7,7 +7,7 @@ import Courses from '../../modules/course';
 export default function CourseScreen() {
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: "#fff"}}>
-      <Header title={'D'} username={'D'}></Header>
+      <Header></Header>
 
       <ParallaxScrollView>
         <Courses></Courses>
