@@ -1,5 +1,5 @@
 import { useUserInfo } from "@/hooks/useGetUserInfor";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { router } from 'expo-router';
 import React from "react";
 import {
@@ -10,12 +10,15 @@ import {
     View
 } from "react-native";
 import { colors } from "../../assets/styles/theme";
-import Button from "../Button/Button";
 import HeaderMenu from "./HeaderMenu";
 
 const Header: React.FC = () => {
     const backHome = () => router.push("/");
     const { user, loading, clearUser } = useUserInfo();
+
+    const goToLogin = () => {
+        router.push("/login");
+      };
 
     return (
         <View style={styles.container}>
@@ -31,17 +34,30 @@ const Header: React.FC = () => {
                 />
             </View>
 
-            <TouchableOpacity>
+            <TouchableOpacity style={{ marginRight: 12 }}>
                 <Ionicons name="notifications-outline" size={24} color="#333" />
             </TouchableOpacity>
 
             {user ? (
                 <HeaderMenu
                     username={user.tenNguoiDung || ""}
-                    onLogout={clearUser} // truyền callback từ hook
+                    userID={user.maNguoiDung}
+                    onLogout={clearUser}
                 />
             ) : (
-                <Button content={"O"} />
+                <TouchableOpacity onPress={goToLogin}>
+                    <MaterialIcons
+                        name="login"
+                        size={24}
+                        color="#fff"
+                        style={{
+                            padding: 6,
+                            backgroundColor: colors.primary,
+                            borderRadius: 4,
+                        }}
+                        />
+
+                </TouchableOpacity>
             )}
         </View>
     );

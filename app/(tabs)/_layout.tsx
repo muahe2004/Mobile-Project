@@ -58,8 +58,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="login"
         options={{
-          title: 'Login',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          href: null, 
+          headerShown: false,
         }}
       />
       <Tabs.Screen
@@ -67,6 +67,13 @@ export default function TabLayout() {
         options={{
           href: null, 
           headerShown: false,
+        }}
+      />
+      <Tabs.Screen
+        name="my-courses/[id]"
+        options={{
+          title: 'Khoá Học Của Tôi',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="book.fill" color={color} />,
         }}
       />
     </Tabs>

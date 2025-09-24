@@ -14,10 +14,11 @@ import { colors } from '../../assets/styles/theme';
 
 type HeaderMenuProps = {
   username: string;
+  userID: string;
   onLogout: () => void;
 };
 
-const HeaderMenu: React.FC<HeaderMenuProps> = ({ username, onLogout }) => {
+const HeaderMenu: React.FC<HeaderMenuProps> = ({ userID, username, onLogout }) => {
   const [visible, setVisible] = useState(false);
   const initial = username ? username.charAt(0).toUpperCase() : "?";
 
@@ -29,6 +30,7 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ username, onLogout }) => {
 
       <Menu
         username={username}
+        userID={userID}
         visible={visible}
         onClose={() => setVisible(false)}
         onLogout={onLogout}
@@ -41,12 +43,13 @@ export default HeaderMenu;
 
 type MenuProps = {
   username: string;
+  userID: string;
   visible: boolean;
   onClose: () => void;
   onLogout: () => void;
 };
 
-const Menu: React.FC<MenuProps> = ({ username, visible, onClose, onLogout }) => {
+const Menu: React.FC<MenuProps> = ({ userID, username, visible, onClose, onLogout }) => {
 
   const goToCourses = () => {
     onClose();
@@ -55,7 +58,7 @@ const Menu: React.FC<MenuProps> = ({ username, visible, onClose, onLogout }) => 
 
   const goToProfile = () => {
     onClose(); 
-    router.push(`/profile/123`); 
+    router.push(`/profile/${userID}`); 
   };
 
   const handleLogout = async () => {
