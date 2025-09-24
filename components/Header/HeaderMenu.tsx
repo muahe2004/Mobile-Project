@@ -14,7 +14,7 @@ import { colors } from '../../assets/styles/theme';
 
 type HeaderMenuProps = {
   username: string;
-  onLogout: () => void; // callback từ Header
+  onLogout: () => void;
 };
 
 const HeaderMenu: React.FC<HeaderMenuProps> = ({ username, onLogout }) => {
@@ -53,30 +53,29 @@ const Menu: React.FC<MenuProps> = ({ username, visible, onClose, onLogout }) => 
     router.push("../../modules/courses");
   };
 
+  const goToProfile = () => {
+    onClose(); 
+    router.push(`/profile/123`); 
+  };
+
   const handleLogout = async () => {
     try {
       await SecureStore.deleteItemAsync("token");
       await SecureStore.deleteItemAsync("userInfo");
-
-      // Reset state user ở Header
       onLogout();
-
-      // Đóng modal
       onClose();
 
-      // Reload trang hiện tại để Header kiểm tra lại user
-      router.replace("/login"); // thay vì router.replace("/login")
+      router.replace("/login");
     } catch (err) {
       console.error("Logout failed:", err);
     }
   };
 
-
   return (
     <Modal visible={visible} transparent onRequestClose={onClose}>
       <Pressable style={styles.overlay} onPress={onClose} />
       <View style={styles.menu}>
-        <TouchableOpacity style={styles.menuItem} onPress={goToCourses}>
+        <TouchableOpacity style={styles.menuItem} onPress={goToProfile}>
           <Text style={styles.menuText}>Trang cá nhân</Text>
         </TouchableOpacity>
 

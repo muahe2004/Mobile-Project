@@ -62,6 +62,13 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
         }}
       />
+      <Tabs.Screen
+        name="profile/[id]"
+        options={{
+          href: null, 
+          headerShown: false,
+        }}
+      />
     </Tabs>
   );
 }
