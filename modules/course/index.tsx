@@ -10,13 +10,13 @@ const Courses: React.FC = () => {
   const API_URL = process.env.EXPO_PUBLIC_UNILEARN_API;
 
   useEffect(() => {
-    fetch(`${API_URL}/courses?page=1&pageSize=100&search=&status=`)
-      .then((res) => res.json())
-      .then((data) => {
-        setCourses(data.data);
-      }) 
-      .catch((err) => console.error("Error fetching courses:", err));
-  }, []);
+      fetch(`${API_URL}/courses?page=1&pageSize=100&search=&status=`)
+        .then((res) => res.json())
+        .then((data) => {
+          setCourses(data.data);
+        }) 
+        .catch((err) => console.log("Error fetching courses:", err));
+    }, []);
 
   const chunkedCourses = [];
   for (let i = 0; i < courses.length; i += 2) {
@@ -34,7 +34,7 @@ const Courses: React.FC = () => {
           {row.map((course, colIndex) =>
             course ? (
               <CourseCard
-                key={course.maKhoaHoc}
+                key={course.id}
                 title={course.tenKhoaHoc || "Courses"}
                 price={course.giaBan}
                 thumbnail={{
@@ -42,7 +42,7 @@ const Courses: React.FC = () => {
                     ? course.hinhAnh.replace("localhost", `${process.env.EXPO_PUBLIC_IPV4}`)
                     : undefined,
                 }}
-                onPress={() => router.push(`/course-details/${course.maKhoaHoc}`)}
+                onPress={() => router.push(`/course-details/${course.id}`)}
               />
             ) : (
               <View key={colIndex} style={{ flex: 1 }} /> 

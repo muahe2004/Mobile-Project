@@ -13,17 +13,30 @@ type DropDownDetailsProps = {
 };
 
 export interface Lesson {
-    maChuongHoc: string;
-    tenChuongHoc: string;
+    id: string;
+    tenChuong: string;
 }
 
-export interface Lectures {
-    maBaiHoc: string;
-    tenBaiHoc: string;
-    moTaBaiHoc: string;
-    video: string;
-    maChuongHoc: string;
-}
+type Lectures = {
+  id: string;
+  tenBaiHoc: string;
+  moTaBaiHoc: string;
+  video: string;
+  chuongHocId: string;
+  trangThai: string;
+  updatedAt: string;
+  createdAt: string;
+};
+
+type LectureResponse = {
+  data: Lectures[];
+  pagination: {
+    totalItems: number;
+    totalPages: number;
+    currentPage: number;
+    pageSize: number;
+  };
+};
 
 export const DropDownDetails: React.FC<DropDownDetailsProps> = ({ coursesID }) => {
     const [lessons, setLessons] = useState<Lesson[]>([]);
@@ -33,55 +46,61 @@ export const DropDownDetails: React.FC<DropDownDetailsProps> = ({ coursesID }) =
     const API_URL = process.env.EXPO_PUBLIC_UNILEARN_API;
     
     useEffect(() => {
-        // http://localhost:8386/unilearn/api/lessons?page=1&pageSize=100&search=&status=&khoaHocId=67586476-6431-4daa-b365-34e08202374f
         fetch(`${API_URL}/lessons?page=1&pageSize=100&search=&status=&khoaHocId=${coursesID}`)
             .then((res) => res.json())
             .then((data) => {
-                console.log(data);
+                // console.log(JSON.stringify(data, null, 2));
                 setLessons(data.data);
             }) 
             .catch((err) => console.log("Error fetching courses:", err));
     }, [coursesID]);
 
 
-    const toggleLesson = async (maChuongHoc: string) => {
+    const toggleLesson = async (id: string) => {
         setOpenLessons((prev) => ({
             ...prev,
-            [maChuongHoc]: !prev[maChuongHoc],
+            [id]: !prev[id],
         }));
 
-        if (!lecturesByLesson[maChuongHoc]) {
-            await fetchLecture(maChuongHoc);
+        if (!lecturesByLesson[id]) {
+            await fetchLecture(id);
         }
     };
 
-    const fetchLecture = async (maChuongHoc: string) => {
+    const fetchLecture = async (chuongHocId: string) => {
         try {
-            const res = await fetch(`${API_URL}/api/lectures/by-lesson/${maChuongHoc}`);
-            const data: Lectures[] = await res.json();
-            setLecturesByLesson((prev) => ({
+            const res = await fetch(`${API_URL}/lectures?page=1&pageSize=100&search=&status=&chuongHocId=${chuongHocId}`);
+            const json = await res.json() as any | { error: any };
+
+            if (!res.ok) {
+                console.error("API error:", json);
+                setLecturesByLesson(prev => ({ ...prev, [chuongHocId]: [] }));
+                return;
+            }
+
+            setLecturesByLesson(prev => ({
                 ...prev,
-                [maChuongHoc]: data,
+                [chuongHocId]: json.data
             }));
         } catch (err) {
-            console.error("Error fetching lectures:", err);
+            console.error("Fetch error:", err);
         }
     };
 
     return (
         <View style={styles.dropDownDetails}>
             {lessons.map((lesson, index) => {
-                const isOpen = openLessons[lesson.maChuongHoc] || false;
-                const lectures = lecturesByLesson[lesson.maChuongHoc] || [];
+                const isOpen = openLessons[lesson.id] || false;
+                const lectures = lecturesByLesson[lesson.id] || [];
 
                 return (
-                    <View key={lesson.maChuongHoc}>
+                    <View key={lesson.id}>
                         <TouchableOpacity
                             style={styles.dropDownDetailsHead}
-                            onPress={() => toggleLesson(lesson.maChuongHoc)}
+                            onPress={() => toggleLesson(lesson.id)}
                         >
                             <Text style={styles.dropDownDetailsTitle}>
-                                {index + 1}. {lesson.tenChuongHoc}
+                                {index + 1}. {lesson.tenChuong}
                             </Text>
                             <AntDesign
                                 name={isOpen ? "up" : "down"}
@@ -95,9 +114,9 @@ export const DropDownDetails: React.FC<DropDownDetailsProps> = ({ coursesID }) =
                                 {lectures.length > 0 ? (
                                     lectures.map((lec, lecIndex) => (
                                         <TouchableOpacity
-                                            key={lec.maBaiHoc}
+                                            key={lec.id}
                                             style={styles.lectureItem}
-                                            onPress={() => router.push(`/learning/${lec.maBaiHoc}`)}
+                                            onPress={() => router.push(`/learning/${lec.id}`)}
                                         >
                                             <Text>
                                             {index + 1}.{lecIndex + 1}. {lec.tenBaiHoc}

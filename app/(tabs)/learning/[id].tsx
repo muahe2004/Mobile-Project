@@ -1,6 +1,6 @@
 import Header from "@/components/Header/Header";
 import { QuestionBox } from "@/modules/course/components/QuestionBox";
-import { Answer, Lectures, ListQuestions } from "@/modules/course/types";
+import { Lectures, ListQuestions } from "@/modules/course/types";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -9,44 +9,44 @@ import { colors } from "../../../assets/styles/theme";
 
 export default function LearningScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
-    const maBaiHoc = id;
 
     const [lecture, setLecture] = useState<Lectures | null>(null);
     const [questions, setQuestions] = useState<ListQuestions[]>([]);
 
-    const API_URL = process.env.EXPO_PUBLIC_API_KEY;
+    const API_URL = process.env.EXPO_PUBLIC_UNILEARN_API;
 
     useEffect(() => {
-        fetch(`${API_URL}/api/lectures/${maBaiHoc}`)
+        fetch(`${API_URL}/lectures/${id}`)
         .then((res) => res.json())
         .then((data) => {
             setLecture(data);
         })
         .catch((err) => console.error("Error fetching courses:", err));
-    }, [maBaiHoc]);
+    }, [id]);
 
     useEffect(() => {
         const fetchQuestionsAndAnswers = async () => {
             try {
-                const qRes = await fetch(`${API_URL}/api/questions/${maBaiHoc}`);
-                const questionsData: ListQuestions[] = await qRes.json();
+                const qRes = await fetch(`${API_URL}/questions?page=1&pageSize=100&search=&baiHocId=${id}`);
+                const json = await qRes.json();
 
-                const questionsWithAnswers: ListQuestions[] = await Promise.all(
-                    questionsData.map(async (q: ListQuestions) => {
-                        const aRes = await fetch(`${API_URL}/api/answers/${q.maCauHoi}`);
-                        const answersData: Answer[] = await aRes.json();
-                        return { ...q, dapAn: answersData }; 
-                    })
-                );
+                if (!qRes.ok) {
+                    console.error("API error:", json);
+                    setQuestions([]); 
+                    return;
+                }
 
-                setQuestions(questionsWithAnswers);
+                const questions = json.data;
+
+                setQuestions(questions);
             } catch (err) {
-                console.error(err);
+                console.error("Error fetching questions:", err);
+                setQuestions([]);
             }
-        };
+            };
 
         fetchQuestionsAndAnswers();
-    }, [maBaiHoc]);
+    }, [id]);
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: "#fff", marginBottom: 80 }}>

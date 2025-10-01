@@ -1,18 +1,17 @@
 import { colors } from "@/assets/styles/theme";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Answer, ListQuestions } from "../types";
 
 type QuestionBoxProps = {
     index: number;
-    question: ListQuestions;
+    question: any;
 };
 
 export const QuestionBox: React.FC<QuestionBoxProps> = ({ index, question }) => {
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
 
-    const handleSelect = (a: Answer) => {
-        setSelectedAnswer(a.maDapAn);
+    const handleSelect = (a: any) => {
+        setSelectedAnswer(a.id); 
     };
 
     return (
@@ -21,16 +20,16 @@ export const QuestionBox: React.FC<QuestionBoxProps> = ({ index, question }) => 
                 {index}. {question.noiDung}
             </Text>
 
-            {question.dapAn.map((a) => {
-                const isSelected = selectedAnswer === a.maDapAn;
-                const isCorrect = a.laDapAnDung.data[0] === 1;
+            {question.dapAns?.map((a: any) => {
+                const isSelected = selectedAnswer === a.id;
+                const isCorrect = a.laDapAnDung === true || a.laDapAnDung?.data?.[0] === 1;
 
                 return (
                     <Pressable
-                        key={a.maDapAn}
+                        key={a.id}
                         style={[
-                        styles.answerBox,
-                        isSelected && (isCorrect ? styles.correctAnswer : styles.wrongAnswer),
+                            styles.answerBox,
+                            isSelected && (isCorrect ? styles.correctAnswer : styles.wrongAnswer),
                         ]}
                         onPress={() => handleSelect(a)}
                     >
@@ -47,7 +46,6 @@ export const QuestionBox: React.FC<QuestionBoxProps> = ({ index, question }) => 
 
 const styles = StyleSheet.create({
     questionBox: {
-        // backgroundColor: "#fafafa",
         marginBottom: 10,
         padding: 12,
         borderRadius: 8,
