@@ -55,8 +55,7 @@ const Header: React.FC = () => {
                             backgroundColor: colors.primary,
                             borderRadius: 4,
                         }}
-                        />
-
+                    />
                 </TouchableOpacity>
             )}
         </View>

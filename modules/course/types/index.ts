@@ -23,6 +23,7 @@ export interface ListQuestions {
 }
 
 export interface Courses {
+  id?: string;
   maKhoaHoc: string;
   tenKhoaHoc: string;
   moTaKhoaHoc: string;

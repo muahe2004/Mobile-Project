@@ -7,10 +7,10 @@ const { width } = Dimensions.get("window");
 
 const Courses: React.FC = () => {
   const [courses, setCourses] = useState<any[]>([]);
-  const API_URL = process.env.EXPO_PUBLIC_API_KEY;
+  const API_URL = process.env.EXPO_PUBLIC_UNILEARN_API;
 
   useEffect(() => {
-    fetch(`${API_URL}/api/courses`)
+    fetch(`${API_URL}/courses?page=1&pageSize=100&search=&status=`)
       .then((res) => res.json())
       .then((data) => {
         setCourses(data.data);
@@ -51,7 +51,6 @@ const Courses: React.FC = () => {
         </View>
       ))}
     </ScrollView>
-    
   );
 };
 

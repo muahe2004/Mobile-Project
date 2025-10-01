@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "MyMobileProject",
-    "slug": "MyMobileProject",
+    "name": "UNILearning",
+    "slug": "UNILearning",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/logoUTEHY.png",
     "scheme": "mymobileproject",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -31,7 +31,11 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#ffffff",
+          "statusBar": {
+            "style": "dark", 
+            "translucent": false
+          }
         }
       ],
       "expo-secure-store"

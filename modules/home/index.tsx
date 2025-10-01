@@ -13,12 +13,12 @@ const carouselData = [
 
 export default function HomePage() {
   const [courses, setCourses] = useState<any[]>([]);
-  const API_URL = process.env.EXPO_PUBLIC_API_KEY;
+  const API_URL = process.env.EXPO_PUBLIC_UNILEARN_API;
 
   const id = ""
 
   useEffect(() => {
-    fetch(`${API_URL}/api/courses`)
+    fetch(`${API_URL}/courses?page=1&pageSize=100&search=&status=`)
       .then((res) => res.json())
       .then((data) => {
         setCourses(data.data);
@@ -57,7 +57,7 @@ export default function HomePage() {
           {row.map((course, colIndex) =>
             course ? (
               <CourseCard
-                key={course.maKhoaHoc}
+                key={course.id}
                 title={course.tenKhoaHoc || "Courses"}
                 price={course.giaBan}
                 thumbnail={{
@@ -65,7 +65,7 @@ export default function HomePage() {
                     ? course.hinhAnh.replace("localhost", `${process.env.EXPO_PUBLIC_IPV4}`)
                     : undefined,
                 }}
-                onPress={() => router.push(`/course-details/${course.maKhoaHoc}`)}
+                onPress={() => router.push(`/course-details/${course.id}`)}
               />
             ) : (
               <View key={colIndex} style={{ flex: 1 }} /> 

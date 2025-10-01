@@ -12,10 +12,10 @@ export default function CourseDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [course, setCourse] = useState<Courses | null>(null);
 
-  const API_URL = process.env.EXPO_PUBLIC_API_KEY;
+  const API_URL = process.env.EXPO_PUBLIC_UNILEARN_API;
   
   useEffect(() => {
-    fetch(`${API_URL}/api/courses/${id}`)
+    fetch(`${API_URL}/courses/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setCourse(data);
@@ -30,7 +30,7 @@ export default function CourseDetailsScreen() {
         headerShown: false, 
       }}
     />
-      <Header title={"Chi tiết khóa học"} username={"User"} />
+      <Header />
 
       <ParallaxScrollView>
         <CourseDetails
@@ -44,7 +44,7 @@ export default function CourseDetailsScreen() {
         />
 
         <DropDownDetails
-          maKhoaHoc={id}
+          coursesID={id}
         ></DropDownDetails>
       </ParallaxScrollView>
     </SafeAreaView>

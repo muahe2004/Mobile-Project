@@ -9,7 +9,7 @@ import {
 } from "react-native";
 
 type DropDownDetailsProps = {
-    maKhoaHoc: string;
+    coursesID: string;
 };
 
 export interface Lesson {
@@ -25,21 +25,23 @@ export interface Lectures {
     maChuongHoc: string;
 }
 
-export const DropDownDetails: React.FC<DropDownDetailsProps> = ({ maKhoaHoc }) => {
+export const DropDownDetails: React.FC<DropDownDetailsProps> = ({ coursesID }) => {
     const [lessons, setLessons] = useState<Lesson[]>([]);
     const [openLessons, setOpenLessons] = useState<Record<string, boolean>>({});
     const [lecturesByLesson, setLecturesByLesson] = useState<Record<string, Lectures[]>>({});
     
-    const API_URL = process.env.EXPO_PUBLIC_API_KEY;
+    const API_URL = process.env.EXPO_PUBLIC_UNILEARN_API;
     
     useEffect(() => {
-        fetch(`${API_URL}/api/lessons/selection-lessons/${maKhoaHoc}`)
+        // http://localhost:8386/unilearn/api/lessons?page=1&pageSize=100&search=&status=&khoaHocId=67586476-6431-4daa-b365-34e08202374f
+        fetch(`${API_URL}/lessons?page=1&pageSize=100&search=&status=&khoaHocId=${coursesID}`)
             .then((res) => res.json())
             .then((data) => {
-                setLessons(data);
+                console.log(data);
+                setLessons(data.data);
             }) 
             .catch((err) => console.log("Error fetching courses:", err));
-    }, [maKhoaHoc]);
+    }, [coursesID]);
 
 
     const toggleLesson = async (maChuongHoc: string) => {
