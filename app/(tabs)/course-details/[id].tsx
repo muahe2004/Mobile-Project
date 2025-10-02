@@ -23,6 +23,8 @@ export default function CourseDetailsScreen() {
       .catch((err) => console.error("Error fetching courses:", err));
   }, [id]);
 
+  
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff", marginBottom: 100 }}>
       <Stack.Screen
@@ -35,7 +37,7 @@ export default function CourseDetailsScreen() {
       <ParallaxScrollView>
         <CourseDetails
           course={{
-            maKhoaHoc: course?.maKhoaHoc || "", 
+            id: course?.id || "", 
             tenKhoaHoc: course?.tenKhoaHoc || "",
             moTa: "",
             giaBan: Number(course?.giaBan),

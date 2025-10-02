@@ -4,14 +4,62 @@ import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { colors } from "../../../assets/styles/theme";
 
 type Course = {
-  maKhoaHoc: string;
+  id: string;
   tenKhoaHoc: string;
   moTa: string;
   giaBan: number;
   hinhAnh?: string;
 };
 
+export interface IRegisterCourse {
+  khoaHocId: string;
+  nguoiDungId: string;
+  trangThai: string;
+  giaBan: number;
+}
+
 const CourseDetails: React.FC<{ course: Course }> = ({ course }) => {
+  const API_URL = process.env.EXPO_PUBLIC_UNILEARN_API;
+  
+  const handleRegister = (id: string, tenKhoaHoc: string, giaBan: number) => {
+    const payload: IRegisterCourse = {
+      nguoiDungId: "5ceb4047-ff81-4098-b947-4bfeba9e26de", 
+      khoaHocId: id,                                 
+      trangThai: "Đang học",
+      giaBan: 0                             
+    };
+
+    if (giaBan > 0) {
+      console.log("Học phí: ", giaBan);
+    } else {
+      registerCourse(payload);
+    }
+  }
+
+  const registerCourse = async (registerCourse: IRegisterCourse)  => {
+    try {
+      const res = await fetch(`${API_URL}/registered-courses`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          nguoiDungId: registerCourse.nguoiDungId,
+          khoaHocId: registerCourse.khoaHocId,
+          trangThai: "Đang học"
+        })
+      });
+
+      if (!res.ok) {
+        throw new Error("Đăng ký thất bại!");
+      }
+
+      const data = await res.json();
+    } catch (error) {
+      console.error("Lỗi khi đăng ký:", error);
+    }
+  }
+
   return (
     <ScrollView style={styles.container}>
       <Image
@@ -28,7 +76,7 @@ const CourseDetails: React.FC<{ course: Course }> = ({ course }) => {
         <Text style={styles.title}>{course.tenKhoaHoc}</Text>
         <Text style={styles.price}>{course.giaBan.toLocaleString()} VND</Text>
 
-        <Button content="ĐĂNG KÝ" onPress={() => console.log("Register")}/>
+        <Button content="ĐĂNG KÝ" onPress={() => handleRegister(course.id, course.tenKhoaHoc, course.giaBan)}/>
       </View>      
     </ScrollView>
   );
