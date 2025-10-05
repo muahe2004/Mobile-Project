@@ -1,4 +1,4 @@
-import { useUserInfo } from "@/hooks/useGetUserInfor";
+import { useUser } from "@/contexts/useContextUser";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { router } from 'expo-router';
 import React from "react";
@@ -14,7 +14,7 @@ import HeaderMenu from "./HeaderMenu";
 
 const Header: React.FC = () => {
     const backHome = () => router.push("/");
-    const { user, loading, clearUser } = useUserInfo();
+    const { user, clearUser } = useUser();
 
     const goToLogin = () => {
         router.push("/login");
@@ -40,8 +40,8 @@ const Header: React.FC = () => {
 
             {user ? (
                 <HeaderMenu
-                    username={user.tenNguoiDung || ""}
-                    userID={user.maNguoiDung}
+                    username={user.name || ""}
+                    userID={user.id}
                     onLogout={clearUser}
                 />
             ) : (

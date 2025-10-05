@@ -20,7 +20,7 @@ export const useUserInfo = () => {
     getUserInfo();
   }, []);
 
-  const clearUser = () => setUser(null); // thêm hàm clear
+  const clearUser = () => setUser(null); 
 
   return { user, loading, setUser, clearUser };
 };

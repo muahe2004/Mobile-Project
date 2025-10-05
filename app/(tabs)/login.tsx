@@ -21,44 +21,38 @@ export default function LoginScreen() {
     const [matKhau, setMatKhau] = useState("");
     const [secureText, setSecureText] = useState(true);
 
-    const API_URL = process.env.EXPO_PUBLIC_API_KEY;
+    const API_URL = process.env.EXPO_PUBLIC_UNIUSERS_API;
     const { setUser } = useUserInfo(); 
 
     const handleLogin = async () => {
         try {
-            const res = await fetch(`${API_URL}/login`, {  
+            const res = await fetch(`${API_URL}/auth/login`, {  
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, matKhau }),
+                body: JSON.stringify({ username: email, password: matKhau }),
             });
 
             const data = await res.json();
 
-            if (res.ok) {
-                await SecureStore.setItemAsync("token", data.token);
+            // console.log(data);
 
-                const userRes = await fetch(`${API_URL}/api/me`, {
+
+            if (res.ok) {
+                await SecureStore.setItemAsync("token", data.access_token);
+
+                const userRes = await fetch(`${API_URL}/auth/me`, {
                     method: "GET",
                     headers: {
-                        "Authorization": `Bearer ${data.token}`,
+                        "Authorization": `Bearer ${data.access_token}`,
                         "Content-Type": "application/json",
                     },
                 });
 
                 if (userRes.ok) {
                     const userData = await userRes.json();
-                    const { matKhau, ...userWithoutPassword } = userData;
-
-                    await SecureStore.setItemAsync(
-                        "userInfo",
-                        JSON.stringify(userWithoutPassword)
-                    );
-                    setUser(userWithoutPassword);
-                    setEmail("");
-                    setMatKhau("");
-
+                    await SecureStore.setItemAsync("userInfo", JSON.stringify(userData));
+                    setUser(userData);   
                     router.replace("/");
-                    // await Updates.reloadAsync();
                 } else {
                     console.error("Fetching user failed");
                 }

@@ -5,6 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 import 'react-native-reanimated';
 
+import { UserProvider } from '@/contexts/useContextUser';
 import { useColorScheme } from '../hooks/useColorScheme.web';
 
 export default function RootLayout() {
@@ -17,17 +18,17 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <View style={{ flex: 1 }}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-      </View>
-      <StatusBar style="dark" />
+      <UserProvider>
+        <View style={{ flex: 1 }}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+        </View>
+        <StatusBar style="dark" />
+      </UserProvider>
     </ThemeProvider>
   );
 }
 
-const styles = StyleSheet.create({
-  
-});
+const styles = StyleSheet.create({});

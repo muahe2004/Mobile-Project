@@ -1,10 +1,10 @@
 export interface UserInfo {
-  anhDaiDien: string;
-  email: string;
+  anhDaiDien?: string;
+  email?: string;
   github?: string | null;
-  loaiNguoiDung: string;
-  maNguoiDung: string;
+  role?: string;
+  id: string;
   soDienThoai?: string | null;
-  soDu: string; 
-  tenNguoiDung: string;
+  soDu?: string; 
+  name: string;
 }
