@@ -12,31 +12,30 @@ import CourseDetails from "../../../modules/course/views/CourseDetails";
 export default function CourseDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [course, setCourse] = useState<Courses | null>(null);
+  
 
   const API_URL = process.env.EXPO_PUBLIC_UNILEARN_API;
-  
+
   useEffect(() => {
     fetch(`${API_URL}/courses/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setCourse(data);
-      }) 
+      })
       .catch((err) => console.error("Error fetching courses:", err));
   }, [id]);
 
+  
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff", marginBottom: 100 }}>
-      <Stack.Screen
-      options={{
-        headerShown: false, 
-      }}
-    />
+      <Stack.Screen options={{ headerShown: false }} />
       <Header />
 
       <ParallaxScrollView>
         <CourseDetails
           course={{
-            id: course?.id || "", 
+            id: course?.id || "",
             tenKhoaHoc: course?.tenKhoaHoc || "",
             moTa: "",
             giaBan: Number(course?.giaBan),
@@ -44,9 +43,7 @@ export default function CourseDetailsScreen() {
           }}
         />
 
-        <DropDownDetails
-          coursesID={id}
-        ></DropDownDetails>
+        <DropDownDetails coursesID={id} />
       </ParallaxScrollView>
     </SafeAreaView>
   );

@@ -17,26 +17,34 @@ export interface IRegisterCourse {
   khoaHocId: string;
   nguoiDungId: string;
   trangThai: string;
-  // giaBan: number;
 }
 
 const CourseDetails: React.FC<{ course: Course }> = ({ course }) => {
   const API_URL = process.env.EXPO_PUBLIC_UNILEARN_API;
   const { user, loading } = useUserInfo();
+  const userID = user?.id;
   
-  const handleRegister = (id: string, tenKhoaHoc: string, giaBan: number) => {
+  const handleRegister = async (id: string, tenKhoaHoc: string, giaBan: number) => {
     const payload: IRegisterCourse = {
       nguoiDungId: user?.id || "", 
       khoaHocId: id,                                 
       trangThai: "Đang học",
     };
 
-    if (giaBan > 0) {
-      console.log("Học phí: ", giaBan);
-    } else {
-      registerCourse(payload);
-      // Chuyển sang trang my courses
-      router.replace(`/my-courses/${user?.id}`);
+    try {
+      const registerRes = await registerCourse(payload);
+
+      const dangKyId = registerRes.id;
+
+      if (giaBan > 0) {
+        await addBill(dangKyId);
+        router.replace(`/my-courses/${user?.id}`);
+      } else {
+        router.replace(`/my-courses/${user?.id}`);
+      }
+
+    } catch (err) {
+      console.error(err);
     }
   }
 
@@ -44,13 +52,38 @@ const CourseDetails: React.FC<{ course: Course }> = ({ course }) => {
     try {
       const res = await fetch(`${API_URL}/registered-courses`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           nguoiDungId: registerCourse.nguoiDungId,
           khoaHocId: registerCourse.khoaHocId,
           trangThai: "Đang học"
+        })
+      });
+
+      if (!res.ok) throw new Error("Đăng ký thất bại!");
+
+      const data = await res.json();
+      return data.data; 
+    } catch (error) {
+      console.error("Lỗi khi đăng ký:", error);
+      return null;
+    }
+  }
+
+  const addBill = async (dangKyId: string) => {
+    try {
+      const res = await fetch(`${API_URL}/bills`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          nguoiDungId: user?.id,
+          dangKyId: dangKyId,
+          loaiThanhToan: "Chuyển khoản",
+          soTien: course.giaBan,
+          trangThai: "Chờ thanh toán",
+          ghiChu: `Thanh toán học phí khoá học ${course.tenKhoaHoc}`
         })
       });
 
