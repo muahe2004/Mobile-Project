@@ -7,21 +7,25 @@ import CourseCard from "../../../modules/course/components/CourseCard";
 
 const { width } = Dimensions.get("window"); 
 
-const Courses: React.FC = () => {
+import { useIsFocused } from "@react-navigation/native";
+
+const MyCourses: React.FC = () => {
     const [courses, setCourses] = useState<any[]>([]);
     const API_URL = process.env.EXPO_PUBLIC_UNILEARN_API;
-    const { user, loading } = useUserInfo();
+    const { user } = useUserInfo();
     const userID = user?.id;
+    const isFocused = useIsFocused(); 
 
     useEffect(() => {
         if (!userID) return;
+
         fetch(`${API_URL}/registered-courses/by-user/${userID}?page=1&pageSize=100`)
-            .then((res) => res.json())
-            .then((data) => {
-                setCourses(Array.isArray(data.data) ? data.data : []); 
-            })
-            .catch((err) => console.error("Error fetching courses:", err));
-    }, [userID]);
+        .then((res) => res.json())
+        .then((data) => {
+            setCourses(Array.isArray(data.data) ? data.data : []); 
+        })
+        .catch((err) => console.error("Error fetching courses:", err));
+    }, [userID, isFocused]); 
 
     const chunkedCourses = [];
     for (let i = 0; i < courses.length; i += 2) {
@@ -43,7 +47,7 @@ const Courses: React.FC = () => {
                         {row.map((course, colIndex) =>
                             course ? (
                                 <CourseCard
-                                    key={course.id}
+                                    key={course.khoaHocId}
                                     title={course.tenKhoaHoc || "Courses"}
                                     price={course.giaBan}
                                     thumbnail={{
@@ -51,7 +55,7 @@ const Courses: React.FC = () => {
                                         ? course.hinhAnh.replace("localhost", `${process.env.EXPO_PUBLIC_IPV4}`)
                                         : undefined,
                                     }}
-                                    onPress={() => router.push(`/course-details/${course.maKhoaHoc}`)}
+                                    onPress={() => router.push(`/course-details/${course.khoaHocId}`)}
                                 />
                                 ) : (
                                 <View key={colIndex} style={{ flex: 1 }} /> 
@@ -64,7 +68,7 @@ const Courses: React.FC = () => {
     );
 };
 
-export default Courses;
+export default MyCourses;
 
 const styles = StyleSheet.create({
     container: {

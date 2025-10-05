@@ -35,7 +35,8 @@ const CourseDetails: React.FC<{ course: Course }> = ({ course }) => {
       console.log("Học phí: ", giaBan);
     } else {
       registerCourse(payload);
-      router.replace("/");
+      // Chuyển sang trang my courses
+      router.replace(`/my-courses/${user?.id}`);
     }
   }
 

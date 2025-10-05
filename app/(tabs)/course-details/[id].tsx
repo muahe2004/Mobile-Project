@@ -23,8 +23,6 @@ export default function CourseDetailsScreen() {
       .catch((err) => console.error("Error fetching courses:", err));
   }, [id]);
 
-  
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff", marginBottom: 100 }}>
       <Stack.Screen

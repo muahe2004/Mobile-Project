@@ -1,3 +1,5 @@
+import { useUserInfo } from "@/hooks/useGetUserInfor";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Dimensions, FlatList, Image, ScrollView, StyleSheet, View } from "react-native";
@@ -14,8 +16,8 @@ const carouselData = [
 export default function HomePage() {
   const [courses, setCourses] = useState<any[]>([]);
   const API_URL = process.env.EXPO_PUBLIC_UNILEARN_API;
-
-  const id = ""
+  const { user } = useUserInfo();
+  const userID = user?.id;
 
   useEffect(() => {
     fetch(`${API_URL}/courses?page=1&pageSize=100&search=&status=`)
@@ -34,6 +36,22 @@ export default function HomePage() {
     }
     chunkedCourses.push(chunk);
   }
+
+  useEffect(() => {
+    if (!userID) return;
+
+    fetch(`${API_URL}/registered-courses/by-user/${userID}?page=1&pageSize=100`)
+      .then((res) => res.json())
+      .then(async (data) => {
+        const courseList = Array.isArray(data.data) ? data.data : [];
+        try {
+          await AsyncStorage.setItem("userCourses", JSON.stringify(courseList));
+        } catch (error) {
+          console.error("Error saving courses to storage:", error);
+        }
+      })
+      .catch((err) => console.error("Error fetching courses:", err));
+  }, [userID]);
 
   return (
     <ScrollView style={styles.container}>

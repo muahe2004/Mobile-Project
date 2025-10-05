@@ -49,7 +49,7 @@ export const DropDownDetails: React.FC<DropDownDetailsProps> = ({ coursesID }) =
         fetch(`${API_URL}/lessons?page=1&pageSize=100&search=&status=&khoaHocId=${coursesID}`)
             .then((res) => res.json())
             .then((data) => {
-                // console.log(JSON.stringify(data, null, 2));
+                console.log(JSON.stringify(data, null, 2));
                 setLessons(data.data);
             }) 
             .catch((err) => console.log("Error fetching courses:", err));
