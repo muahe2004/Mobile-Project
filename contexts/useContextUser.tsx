@@ -1,13 +1,7 @@
-// contexts/UserContext.tsx
 import { UserInfo } from "@/modules/user/types";
 import * as SecureStore from "expo-secure-store";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-// export type UserInfo = {
-//   id: string;
-//   name: string;
-//   role: string;
-// };
 
 type UserContextType = {
   user: UserInfo | null;

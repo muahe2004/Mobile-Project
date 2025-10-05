@@ -1,4 +1,6 @@
 import Button from "@/components/Button/Button";
+import { useUserInfo } from "@/hooks/useGetUserInfor";
+import { router } from 'expo-router';
 import React from "react";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { colors } from "../../../assets/styles/theme";
@@ -15,24 +17,25 @@ export interface IRegisterCourse {
   khoaHocId: string;
   nguoiDungId: string;
   trangThai: string;
-  giaBan: number;
+  // giaBan: number;
 }
 
 const CourseDetails: React.FC<{ course: Course }> = ({ course }) => {
   const API_URL = process.env.EXPO_PUBLIC_UNILEARN_API;
+  const { user, loading } = useUserInfo();
   
   const handleRegister = (id: string, tenKhoaHoc: string, giaBan: number) => {
     const payload: IRegisterCourse = {
-      nguoiDungId: "5ceb4047-ff81-4098-b947-4bfeba9e26de", 
+      nguoiDungId: user?.id || "", 
       khoaHocId: id,                                 
       trangThai: "Đang học",
-      giaBan: 0                             
     };
 
     if (giaBan > 0) {
       console.log("Học phí: ", giaBan);
     } else {
       registerCourse(payload);
+      router.replace("/");
     }
   }
 

@@ -9,22 +9,19 @@ const { width } = Dimensions.get("window");
 
 const Courses: React.FC = () => {
     const [courses, setCourses] = useState<any[]>([]);
-    const API_URL = process.env.EXPO_PUBLIC_API_KEY;
+    const API_URL = process.env.EXPO_PUBLIC_UNILEARN_API;
     const { user, loading } = useUserInfo();
-    const maNguoiDung = user?.maNguoiDung;
-
+    const userID = user?.id;
 
     useEffect(() => {
-        if (!maNguoiDung) return;
-        
-        fetch(`${API_URL}/api/courses/registered/${maNguoiDung}`)
-        .then((res) => res.json())
-        .then((data) => {
-            console.log("API response:", data);
-            setCourses(Array.isArray(data) ? data : []); 
-        })
-        .catch((err) => console.error("Error fetching courses:", err));
-    }, [maNguoiDung]);
+        if (!userID) return;
+        fetch(`${API_URL}/registered-courses/by-user/${userID}?page=1&pageSize=100`)
+            .then((res) => res.json())
+            .then((data) => {
+                setCourses(Array.isArray(data.data) ? data.data : []); 
+            })
+            .catch((err) => console.error("Error fetching courses:", err));
+    }, [userID]);
 
     const chunkedCourses = [];
     for (let i = 0; i < courses.length; i += 2) {
@@ -46,7 +43,7 @@ const Courses: React.FC = () => {
                         {row.map((course, colIndex) =>
                             course ? (
                                 <CourseCard
-                                    key={course.maKhoaHoc}
+                                    key={course.id}
                                     title={course.tenKhoaHoc || "Courses"}
                                     price={course.giaBan}
                                     thumbnail={{
