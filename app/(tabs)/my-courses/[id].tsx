@@ -2,7 +2,8 @@ import Header from "@/components/Header/Header";
 import { useUserInfo } from "@/hooks/useGetUserInfor";
 import { router, Stack } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Dimensions, SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
+import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import CourseCard from "../../../modules/course/components/CourseCard";
 
 const { width } = Dimensions.get("window"); 

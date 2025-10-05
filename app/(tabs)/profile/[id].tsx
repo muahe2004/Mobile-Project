@@ -3,7 +3,8 @@ import Header from "@/components/Header/Header";
 import { useUserInfo } from "@/hooks/useGetUserInfor";
 import { Stack } from "expo-router";
 import React from "react";
-import { Dimensions, SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window"); 
 
@@ -80,7 +81,7 @@ const Profile: React.FC = () => {
                         <Text>Đang tải...</Text>
                     ) : (
                         <View>
-                            <Text style={styles.userName}>{user?.tenNguoiDung}</Text>
+                            <Text style={styles.userName}>{user?.name}</Text>
                             <Text style={styles.userEmail}>{user?.email}</Text>
                         </View>
                     )}

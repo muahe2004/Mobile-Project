@@ -6,7 +6,6 @@ import * as SecureStore from "expo-secure-store";
 import React, { useState } from "react";
 import {
     Keyboard,
-    SafeAreaView,
     StyleSheet,
     Text,
     TextInput,
@@ -14,6 +13,7 @@ import {
     TouchableWithoutFeedback,
     View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../../assets/styles/theme";
 
 export default function LoginScreen() {

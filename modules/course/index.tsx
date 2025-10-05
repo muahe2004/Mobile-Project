@@ -10,13 +10,13 @@ const Courses: React.FC = () => {
   const API_URL = process.env.EXPO_PUBLIC_UNILEARN_API;
 
   useEffect(() => {
-      fetch(`${API_URL}/courses?page=1&pageSize=100&search=&status=`)
-        .then((res) => res.json())
-        .then((data) => {
-          setCourses(data.data);
-        }) 
-        .catch((err) => console.log("Error fetching courses:", err));
-    }, []);
+    fetch(`${API_URL}/courses?page=1&pageSize=100&search=&status=`)
+      .then((res) => res.json())
+      .then((data) => {
+        setCourses(data.data);
+      }) 
+      .catch((err) => console.log("Error fetching courses:", err));
+  }, []);
 
   const chunkedCourses = [];
   for (let i = 0; i < courses.length; i += 2) {
