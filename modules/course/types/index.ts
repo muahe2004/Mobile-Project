@@ -8,6 +8,17 @@ export interface Lectures {
   maKhoaHoc: string;
 }
 
+export interface LecturesLearning {
+  maBaiHoc: string;
+  tenBaiHoc: string;
+  moTaBaiHoc: string;
+  video: string;
+  maChuongHoc: string;
+  tenChuongHoc: string;
+  maKhoaHoc: string;
+  daHoanThanh: boolean;
+}
+
 export interface Answer {
   maDapAn: string;
   noiDungDapAn: string;
@@ -17,7 +28,8 @@ export interface Answer {
 
 export interface ListQuestions {
   maBaiHoc: string;
-  maCauHoi: string;
+  maCauHoi?: string;
+  id?: string;
   noiDung: string;
   dapAn: Answer[];
 }
@@ -31,4 +43,9 @@ export interface Courses {
   doKho: string;
   giaBan: number;
   maGiangVien: string;
+}
+
+export interface YouTubeVideoDurationResponse {
+  videoId: string;
+  duration: string;
 }
