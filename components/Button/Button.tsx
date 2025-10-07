@@ -1,35 +1,40 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { colors } from "../../assets/styles/theme";
 
 interface ButtonProps {
-    content: string;
+    content?: string;           // text
     onPress?: () => void;
-    textColor?: string; 
-    variant?: "filled" | "outlined"; 
+    textColor?: string;
+    variant?: "filled" | "outlined";
+    icon?: React.ReactNode;     // thêm prop icon
 }
 
-const Button: React.FC<ButtonProps> = ({ content, onPress, textColor, variant = "filled" }) => {
+const Button: React.FC<ButtonProps> = ({ content, onPress, textColor, variant = "filled", icon }) => {
     const isOutlined = variant === "outlined";
 
     return (
         <TouchableOpacity
-        style={[
-            styles.button,
-            isOutlined && styles.outlinedButton, 
-        ]}
-        onPress={onPress}
-        activeOpacity={0.7}
-        >
-        <Text
             style={[
-            styles.text,
-            isOutlined && styles.outlinedText, 
-            textColor && { color: textColor }, 
+                styles.button,
+                isOutlined && styles.outlinedButton,
             ]}
+            onPress={onPress}
+            activeOpacity={0.7}
         >
-            {content}
-        </Text>
+            {icon ? (
+                <View style={styles.iconContainer}>{icon}</View>
+            ) : (
+                <Text
+                    style={[
+                        styles.text,
+                        isOutlined && styles.outlinedText,
+                        textColor && { color: textColor },
+                    ]}
+                >
+                    {content}
+                </Text>
+            )}
         </TouchableOpacity>
     );
 };
@@ -49,7 +54,6 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         color: colors.white,
     },
-
     outlinedButton: {
         backgroundColor: "transparent",
         borderWidth: 2,
@@ -57,6 +61,10 @@ const styles = StyleSheet.create({
     },
     outlinedText: {
         color: colors.primary,
+    },
+    iconContainer: {
+        justifyContent: "center",
+        alignItems: "center",
     },
 });
 

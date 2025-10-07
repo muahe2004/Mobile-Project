@@ -1,10 +1,11 @@
 import Header from "@/components/Header/Header";
+import { LearningActions } from "@/modules/course/components/LearningActions";
 import { QuestionBox } from "@/modules/course/components/QuestionBox";
 import { Lectures, ListQuestions } from "@/modules/course/types";
 import { extractYoutubeId } from "@/modules/course/utils/getVideoID";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { Button, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import YoutubePlayer from "react-native-youtube-iframe";
 import { colors } from "../../../assets/styles/theme";
@@ -32,10 +33,9 @@ export default function LearningScreen() {
             if (videoId) {
                 setVideoID(videoId);
 
-                // lấy duration trực tiếp từ player
                 setTimeout(async () => {
-                const d = await playerRef.current?.getDuration();
-                if (d) setDuration(d);
+                    const d = await playerRef.current?.getDuration();
+                    if (d) setDuration(d);
                 }, 1500);
             }
             }
@@ -77,6 +77,8 @@ export default function LearningScreen() {
             />
             <Header />
 
+            <LearningActions></LearningActions>
+
             <ScrollView>
                 {lecture && (
                 <View>
@@ -117,7 +119,7 @@ export default function LearningScreen() {
                     <Text style={styles.learningLectureName}>{lecture.tenBaiHoc}</Text>
                     <Text style={styles.learningLectureDesc}>{lecture.moTaBaiHoc}</Text>
 
-                    {duration && (
+                    {/* {duration && (
                     <Text style={{ padding: 12 }}>
                         ⏱ Thời lượng video: {duration} giây
                     </Text>
@@ -129,7 +131,7 @@ export default function LearningScreen() {
                         const current = await playerRef.current?.getCurrentTime();
                         console.log("Đang xem tới giây:", current);
                     }}
-                    />
+                    /> */}
                 </View>
                 )}
 
