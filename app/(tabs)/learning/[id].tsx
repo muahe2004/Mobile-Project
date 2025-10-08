@@ -1,5 +1,4 @@
 import Header from "@/components/Header/Header";
-import { LearningActions } from "@/modules/course/components/LearningActions";
 import { QuestionBox } from "@/modules/course/components/QuestionBox";
 import { Lectures, ListQuestions } from "@/modules/course/types";
 import { extractYoutubeId } from "@/modules/course/utils/getVideoID";
@@ -12,16 +11,16 @@ import { colors } from "../../../assets/styles/theme";
 
 export default function LearningScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
+    const playerRef = useRef<any>(null);
 
     const [lecture, setLecture] = useState<Lectures | null>(null);
     const [questions, setQuestions] = useState<ListQuestions[]>([]);
     const [videoID, setVideoID] = useState("");
     const [duration, setDuration] = useState<number | null>(null);
-    const playerRef = useRef<any>(null);
 
     const API_URL = process.env.EXPO_PUBLIC_UNILEARN_API;
 
-    // Fetch thông tin bài học
+    // ✅ Fetch bài học
     useEffect(() => {
         fetch(`${API_URL}/lectures/${id}`)
         .then((res) => res.json())
@@ -34,8 +33,8 @@ export default function LearningScreen() {
                 setVideoID(videoId);
 
                 setTimeout(async () => {
-                    const d = await playerRef.current?.getDuration();
-                    if (d) setDuration(d);
+                const d = await playerRef.current?.getDuration();
+                if (d) setDuration(d);
                 }, 1500);
             }
             }
@@ -43,7 +42,7 @@ export default function LearningScreen() {
         .catch((err) => console.error("Error fetching lectures:", err));
     }, [id]);
 
-    // Fetch câu hỏi ôn tập
+    // ✅ Fetch câu hỏi ôn tập
     useEffect(() => {
         const fetchQuestionsAndAnswers = async () => {
         try {
@@ -69,104 +68,84 @@ export default function LearningScreen() {
     }, [id]);
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: "#fff", marginBottom: 80 }}>
-            <Stack.Screen
-                options={{
-                headerShown: false,
-                }}
-            />
-            <Header />
+    <SafeAreaView key={id} style={{ flex: 1, backgroundColor: "#fff", marginBottom: 80 }}>
+        <Stack.Screen options={{ headerShown: false }} />
+        <Header />
 
-            <LearningActions></LearningActions>
+        <ScrollView>
+            {lecture && (
+            <View>
+                <View style={styles.videoWrapper}>
+                {videoID ? (
+                    <YoutubePlayer
+                    ref={playerRef}
+                    height={230}
+                    play={false}
+                    videoId={videoID}
+                    onChangeState={async (state: string) => {
+                        console.log("Trạng thái video:", state);
+                        if (state === "playing") {
+                        console.log("Người dùng đang xem video");
+                        }
+                        if (state === "paused") {
+                        console.log("Người dùng đã pause");
+                        }
 
-            <ScrollView>
-                {lecture && (
-                <View>
-                    <View style={styles.videoWrapper}>
-                    {videoID ? (
-                        <YoutubePlayer
-                        ref={playerRef}
-                        height={230}
-                        play={false}
-                        videoId={videoID}
-                        onChangeState={async (state: string) => {
-                            console.log("Trạng thái video:", state);
-                            if (state === "playing") {
-                                console.log("Người dùng đang xem video");
-                            }
-                            if (state === "paused") {
-                                console.log("Người dùng đã pause");
-                            }
-
-                            if (duration) {
-                            const current = await playerRef.current?.getCurrentTime();
-                            const progress = (current / duration) * 100;
-
-                            console.log(`Đã xem: ${progress.toFixed(2)}%`);
-
-                            if (progress >= 80) {
-                                console.log("✅ Người dùng đã hoàn thành video (>= 80%)");
-                                // ở đây có thể gọi API update tiến độ học
-                            }
-                            }
-                        }}
-                        />
-                    ) : (
-                        <Text>Không tìm thấy video</Text>
-                    )}
-                    </View>
-
-                    <Text style={styles.learningLectureName}>{lecture.tenBaiHoc}</Text>
-                    <Text style={styles.learningLectureDesc}>{lecture.moTaBaiHoc}</Text>
-
-                    {/* {duration && (
-                    <Text style={{ padding: 12 }}>
-                        ⏱ Thời lượng video: {duration} giây
-                    </Text>
-                    )}
-
-                    <Button
-                    title="Xem thời gian hiện tại"
-                    onPress={async () => {
+                        if (duration) {
                         const current = await playerRef.current?.getCurrentTime();
-                        console.log("Đang xem tới giây:", current);
+                        const progress = (current / duration) * 100;
+
+                        console.log(`Đã xem: ${progress.toFixed(2)}%`);
+
+                        if (progress >= 80) {
+                            console.log("✅ Người dùng đã hoàn thành video (>= 80%)");
+                            // Gọi API update tiến độ học ở đây nếu cần
+                        }
+                        }
                     }}
-                    /> */}
-                </View>
+                    />
+                ) : (
+                    <Text>Không tìm thấy video</Text>
                 )}
+                </View>
 
-                <Text style={styles.learningTitle}>Câu hỏi ôn tập</Text>
+                <Text style={styles.learningLectureName}>{lecture.tenBaiHoc}</Text>
+                <Text style={styles.learningLectureDesc}>{lecture.moTaBaiHoc}</Text>
+            </View>
+            )}
 
-                {questions?.map((ques, index) => (
-                <QuestionBox key={ques.id} question={ques} index={index + 1} />
-                ))}
-            </ScrollView>
+            <Text style={styles.learningTitle}>Câu hỏi ôn tập</Text>
+
+            {questions?.map((ques, index) => (
+            <QuestionBox key={ques.id} question={ques} index={index + 1} />
+            ))}
+        </ScrollView>
         </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
-  videoWrapper: {
-    width: "100%",
-    aspectRatio: 16 / 9,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.primary,
-  },
-  learningLectureName: {
-    padding: 12,
-    fontSize: 24,
-    color: colors.text,
-    fontWeight: "bold",
-  },
-  learningLectureDesc: {
-    fontSize: 14,
-    padding: 12,
-  },
-  learningTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    padding: 12,
-    backgroundColor: colors.primary,
-    color: colors.white,
-  },
+    videoWrapper: {
+        width: "100%",
+        aspectRatio: 16 / 9,
+        borderBottomWidth: 1,
+        borderBottomColor: colors.primary,
+    },
+    learningLectureName: {
+        padding: 12,
+        fontSize: 24,
+        color: colors.text,
+        fontWeight: "bold",
+    },
+    learningLectureDesc: {
+        fontSize: 14,
+        padding: 12,
+    },
+    learningTitle: {
+        fontSize: 18,
+        fontWeight: "bold",
+        padding: 12,
+        backgroundColor: colors.primary,
+        color: colors.white,
+    },
 });

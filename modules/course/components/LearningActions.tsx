@@ -1,33 +1,39 @@
 import Button from "@/components/Button/Button";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
+import { LearningNavigation } from "./LearningNavigation";
 
-export const LearningActions = () => {
+export const LearningActions: React.FC = () => {
+    const [menuOpen, setMenuOpen] = useState<boolean>(false);
+
     return (
-        <View style={styles.container}>
-            <Button
-                onPress={() => console.log("AI")}
-                icon={<MaterialCommunityIcons name="robot" size={18} color="#fff" />}
-                variant="filled"
-            />
+        <View style={{ flex: 1 }}>
+            <View style={styles.fabContainer}>
+                <Button
+                    onPress={() => console.log("AI")}
+                    icon={<MaterialCommunityIcons name="robot" size={18} color="#fff" />}
+                    variant="filled"
+                />
+                <Button
+                    onPress={() => {setMenuOpen(!menuOpen), console.log("Menu")}}
+                    icon={<Ionicons name="menu" size={18} color="#fff" />}
+                    variant="filled"
+                />
+            </View>
 
-            <Button
-                onPress={() => console.log("Menu")}
-                icon={<Ionicons name="menu" size={18} color="#fff" />}
-                variant="filled"
-            />
+            <LearningNavigation open={menuOpen} />
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
+    fabContainer: {
         position: "absolute",
-        bottom: 5,
+        bottom: -60,
         right: 10,
         flexDirection: "row",
-        alignItems: "center",
-        zIndex: 999,
-        gap: 10
+        gap: 10,
+        zIndex: 1000,
     },
 });

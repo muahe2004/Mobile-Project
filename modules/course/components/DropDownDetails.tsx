@@ -10,6 +10,7 @@ import {
 
 type DropDownDetailsProps = {
     coursesID: string;
+    onClose?: () => void;
 };
 
 export interface Lesson {
@@ -38,7 +39,7 @@ type LectureResponse = {
   };
 };
 
-export const DropDownDetails: React.FC<DropDownDetailsProps> = ({ coursesID }) => {
+export const DropDownDetails: React.FC<DropDownDetailsProps> = ({ coursesID, onClose }) => {
     const [lessons, setLessons] = useState<Lesson[]>([]);
     const [openLessons, setOpenLessons] = useState<Record<string, boolean>>({});
     const [lecturesByLesson, setLecturesByLesson] = useState<Record<string, Lectures[]>>({});
@@ -49,7 +50,6 @@ export const DropDownDetails: React.FC<DropDownDetailsProps> = ({ coursesID }) =
         fetch(`${API_URL}/lessons?page=1&pageSize=100&search=&status=&khoaHocId=${coursesID}`)
             .then((res) => res.json())
             .then((data) => {
-                console.log(JSON.stringify(data, null, 2));
                 setLessons(data.data);
             }) 
             .catch((err) => console.log("Error fetching courses:", err));
@@ -73,7 +73,6 @@ export const DropDownDetails: React.FC<DropDownDetailsProps> = ({ coursesID }) =
             const json = await res.json() as any | { error: any };
 
             if (!res.ok) {
-                console.error("API error:", json);
                 setLecturesByLesson(prev => ({ ...prev, [chuongHocId]: [] }));
                 return;
             }
@@ -116,7 +115,9 @@ export const DropDownDetails: React.FC<DropDownDetailsProps> = ({ coursesID }) =
                                         <TouchableOpacity
                                             key={lec.id}
                                             style={styles.lectureItem}
-                                            onPress={() => router.push(`/learning/${lec.id}`)}
+                                            onPress={() => {
+                                                router.replace(`/learning/${lec.id}`);
+                                            }}
                                         >
                                             <Text>
                                             {index + 1}.{lecIndex + 1}. {lec.tenBaiHoc}
@@ -141,7 +142,7 @@ const styles = StyleSheet.create({
     dropDownDetails: {
         backgroundColor: "#fff",
         width: "100%",
-        padding: 12,
+        // padding: 12,
     },
     dropDownDetailsHead: {
         backgroundColor: "#eee",
