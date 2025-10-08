@@ -117,6 +117,7 @@ export const DropDownDetails: React.FC<DropDownDetailsProps> = ({ coursesID, onC
                                             style={styles.lectureItem}
                                             onPress={() => {
                                                 router.replace(`/learning/${lec.id}`);
+                                                if (onClose) onClose();
                                             }}
                                         >
                                             <Text>
@@ -142,7 +143,6 @@ const styles = StyleSheet.create({
     dropDownDetails: {
         backgroundColor: "#fff",
         width: "100%",
-        // padding: 12,
     },
     dropDownDetailsHead: {
         backgroundColor: "#eee",

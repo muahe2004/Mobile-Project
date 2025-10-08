@@ -8,7 +8,7 @@ interface LearningNavigationProps {
     open: boolean;
 }
 
-export const LearningNavigation: React.FC<LearningNavigationProps> = ({ open }) => {
+export const LearningNavigation: React.FC<LearningNavigationProps & { onClose: () => void }> = ({ open, onClose }) => {
     const slideAnim = useRef(new Animated.Value(width)).current; 
 
     useEffect(() => {
@@ -23,6 +23,7 @@ export const LearningNavigation: React.FC<LearningNavigationProps> = ({ open }) 
         <Animated.View style={[ styles.menu, { transform: [{ translateX: slideAnim }] }]}>
             <View style={styles.menuContent}>
                 <Text style={styles.menuTitle}>DANH SÁCH BÀI HỌC</Text>
+
                 <ScrollView style={styles.navigationScroll}>
                     <DropDownDetails coursesID={"f8b63e7d-87ed-4b4d-90b0-957b0a5745c0"} />
                 </ScrollView>

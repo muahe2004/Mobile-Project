@@ -22,7 +22,7 @@ export const LearningActions: React.FC = () => {
                 />
             </View>
 
-            <LearningNavigation open={menuOpen} />
+            <LearningNavigation open={menuOpen} onClose={() => setMenuOpen(false)} />
         </View>
     );
 };

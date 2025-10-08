@@ -1,4 +1,5 @@
 import Header from "@/components/Header/Header";
+import { LearningActions } from "@/modules/course/components/LearningActions";
 import { QuestionBox } from "@/modules/course/components/QuestionBox";
 import { Lectures, ListQuestions } from "@/modules/course/types";
 import { extractYoutubeId } from "@/modules/course/utils/getVideoID";
@@ -20,7 +21,6 @@ export default function LearningScreen() {
 
     const API_URL = process.env.EXPO_PUBLIC_UNILEARN_API;
 
-    // ✅ Fetch bài học
     useEffect(() => {
         fetch(`${API_URL}/lectures/${id}`)
         .then((res) => res.json())
@@ -42,7 +42,6 @@ export default function LearningScreen() {
         .catch((err) => console.error("Error fetching lectures:", err));
     }, [id]);
 
-    // ✅ Fetch câu hỏi ôn tập
     useEffect(() => {
         const fetchQuestionsAndAnswers = async () => {
         try {
@@ -73,6 +72,8 @@ export default function LearningScreen() {
         <Header />
 
         <ScrollView>
+            <LearningActions></LearningActions>
+            
             {lecture && (
             <View>
                 <View style={styles.videoWrapper}>
