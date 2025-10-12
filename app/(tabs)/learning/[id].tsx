@@ -1,8 +1,10 @@
+import Button from "@/components/Button/Button";
 import Header from "@/components/Header/Header";
-import { LearningActions } from "@/modules/course/components/LearningActions";
+import { LearningNavigation } from "@/modules/course/components/LearningNavigation";
 import { QuestionBox } from "@/modules/course/components/QuestionBox";
 import { Lectures, ListQuestions } from "@/modules/course/types";
 import { extractYoutubeId } from "@/modules/course/utils/getVideoID";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
@@ -66,61 +68,79 @@ export default function LearningScreen() {
         fetchQuestionsAndAnswers();
     }, [id]);
 
+    const [openMenu, setOpenMenu] = useState(false);
+
+    const handleMenu = () => {
+        setOpenMenu(true);  // mở menu
+    };
+
+
     return (
-    <SafeAreaView key={id} style={{ flex: 1, backgroundColor: "#fff", marginBottom: 80 }}>
-        <Stack.Screen options={{ headerShown: false }} />
-        <Header />
+        <SafeAreaView key={id} style={{ flex: 1, backgroundColor: "#fff", marginBottom: 80 }}>
+            <Stack.Screen options={{ headerShown: false }} />
+            <Header />
 
-        <ScrollView>
-            <LearningActions></LearningActions>
-            
-            {lecture && (
-            <View>
-                <View style={styles.videoWrapper}>
-                {videoID ? (
-                    <YoutubePlayer
-                    ref={playerRef}
-                    height={230}
-                    play={false}
-                    videoId={videoID}
-                    onChangeState={async (state: string) => {
-                        console.log("Trạng thái video:", state);
-                        if (state === "playing") {
-                        console.log("Người dùng đang xem video");
-                        }
-                        if (state === "paused") {
-                        console.log("Người dùng đã pause");
-                        }
+            <ScrollView>                
+                {lecture && (
+                <View>
+                    <View style={styles.videoWrapper}>
+                    {videoID ? (
+                        <YoutubePlayer
+                        ref={playerRef}
+                        height={230}
+                        play={false}
+                        videoId={videoID}
+                        onChangeState={async (state: string) => {
+                            console.log("Trạng thái video:", state);
+                            if (state === "playing") {
+                            console.log("Người dùng đang xem video");
+                            }
+                            if (state === "paused") {
+                            console.log("Người dùng đã pause");
+                            }
 
-                        if (duration) {
-                        const current = await playerRef.current?.getCurrentTime();
-                        const progress = (current / duration) * 100;
+                            if (duration) {
+                            const current = await playerRef.current?.getCurrentTime();
+                            const progress = (current / duration) * 100;
 
-                        console.log(`Đã xem: ${progress.toFixed(2)}%`);
+                            console.log(`Đã xem: ${progress.toFixed(2)}%`);
 
-                        if (progress >= 80) {
-                            console.log("✅ Người dùng đã hoàn thành video (>= 80%)");
-                            // Gọi API update tiến độ học ở đây nếu cần
-                        }
-                        }
-                    }}
-                    />
-                ) : (
-                    <Text>Không tìm thấy video</Text>
-                )}
+                            if (progress >= 80) {
+                                console.log("✅ Người dùng đã hoàn thành video (>= 80%)");
+                            }
+                            }
+                        }}
+                        />
+                    ) : (
+                        <Text>Không tìm thấy video</Text>
+                    )}
+                    </View>
+
+                    <Text style={styles.learningLectureName}>{lecture.tenBaiHoc}</Text>
+                    <Text style={styles.learningLectureDesc}>{lecture.moTaBaiHoc}</Text>
                 </View>
+                )}
 
-                <Text style={styles.learningLectureName}>{lecture.tenBaiHoc}</Text>
-                <Text style={styles.learningLectureDesc}>{lecture.moTaBaiHoc}</Text>
+                <Text style={styles.learningTitle}>Câu hỏi ôn tập</Text>
+
+                {questions?.map((ques, index) => (
+                <QuestionBox key={ques.id} question={ques} index={index + 1} />
+                ))}
+
+            </ScrollView>
+
+            <View style={styles.learningActions}>
+                <Button
+                    icon={<MaterialCommunityIcons name="robot" size={18} color="#fff" />}
+                    onPress={handleMenu}
+                />
+                <Button
+                    icon={<Ionicons name="menu" size={18} color="#fff" />}
+                    onPress={handleMenu}
+                />
             </View>
-            )}
 
-            <Text style={styles.learningTitle}>Câu hỏi ôn tập</Text>
-
-            {questions?.map((ques, index) => (
-            <QuestionBox key={ques.id} question={ques} index={index + 1} />
-            ))}
-        </ScrollView>
+            <LearningNavigation open={openMenu} onClose={() => setOpenMenu(false)}/>
         </SafeAreaView>
     );
 }
@@ -149,4 +169,9 @@ const styles = StyleSheet.create({
         backgroundColor: colors.primary,
         color: colors.white,
     },
+    learningActions: {
+        position: "absolute",  
+        bottom: 10,           
+        right: 10,        
+    }
 });

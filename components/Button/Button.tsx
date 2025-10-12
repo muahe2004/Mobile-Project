@@ -1,16 +1,26 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TextStyle, TouchableOpacity, View, ViewStyle } from "react-native";
 import { colors } from "../../assets/styles/theme";
 
 interface ButtonProps {
-    content?: string;           // text
+    content?: string;           
     onPress?: () => void;
     textColor?: string;
     variant?: "filled" | "outlined";
-    icon?: React.ReactNode;     // thêm prop icon
+    icon?: React.ReactNode;
+    style?: ViewStyle;     
+    textStyle?: TextStyle;      
 }
 
-const Button: React.FC<ButtonProps> = ({ content, onPress, textColor, variant = "filled", icon }) => {
+const Button: React.FC<ButtonProps> = ({
+    content,
+    onPress,
+    textColor,
+    variant = "filled",
+    icon,
+    style,
+    textStyle
+}) => {
     const isOutlined = variant === "outlined";
 
     return (
@@ -18,6 +28,7 @@ const Button: React.FC<ButtonProps> = ({ content, onPress, textColor, variant = 
             style={[
                 styles.button,
                 isOutlined && styles.outlinedButton,
+                style, 
             ]}
             onPress={onPress}
             activeOpacity={0.7}
@@ -30,6 +41,7 @@ const Button: React.FC<ButtonProps> = ({ content, onPress, textColor, variant = 
                         styles.text,
                         isOutlined && styles.outlinedText,
                         textColor && { color: textColor },
+                        textStyle, 
                     ]}
                 >
                     {content}

@@ -1,5 +1,7 @@
+import Button from "@/components/Button/Button";
+import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef } from "react";
-import { Animated, Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Animated, Dimensions, ScrollView, StyleSheet, View } from "react-native";
 import DropDownDetails from "./DropDownDetails";
 
 const { width, height } = Dimensions.get("window");
@@ -22,10 +24,14 @@ export const LearningNavigation: React.FC<LearningNavigationProps & { onClose: (
     return (
         <Animated.View style={[ styles.menu, { transform: [{ translateX: slideAnim }] }]}>
             <View style={styles.menuContent}>
-                <Text style={styles.menuTitle}>DANH SÁCH BÀI HỌC</Text>
+                <Button
+                    style={styles.navigationClose}
+                    icon={<Ionicons name="close" size={18} color="#fff" />}
+                    onPress={onClose}
+                />
 
-                <ScrollView style={styles.navigationScroll}>
-                    <DropDownDetails coursesID={"f8b63e7d-87ed-4b4d-90b0-957b0a5745c0"} />
+                <ScrollView>
+                    <DropDownDetails onClose={onClose}  coursesID={"f8b63e7d-87ed-4b4d-90b0-957b0a5745c0"} />
                 </ScrollView>
             </View>
         </Animated.View>
@@ -38,36 +44,37 @@ const styles = StyleSheet.create({
         top: 0,
         left: 0,
         width: width,
-        height: height,
+        height: height,         
         zIndex: 10,
-    },
-    overlay: {
-        position: "absolute",
-        width: "100%",
-        height: "100%",
-        backgroundColor: "rgba(0,0,0,0.7)",
     },
     menuContent: {
         position: "absolute",
+        top: 0,
         right: 0,
-        width: "100%",
+        width: "100%",            
         height: "100%",
         backgroundColor: "#fff",
-        paddingVertical: 20,
+        paddingVertical: 40,
+        paddingBottom: 80,
+        shadowColor: "#000",
+        shadowOffset: { width: -2, height: 0 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 5,
     },
-    menuTitle: {
-        color: "#000",
-        fontSize: 20,
-        marginBottom: 20,
-        paddingLeft: 12
+    overlay: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        backgroundColor: "rgba(0,0,0,0.5)",
+        zIndex: 5,
     },
-    menuItem: {
-        color: "#000",
-        fontSize: 18,
-        marginBottom: 15,
-        backgroundColor: "green"
-    },
-    navigationScroll: {
-        marginBottom: 165
+    navigationClose: {
+        width: 60,
+        marginLeft: "auto",
+        marginRight: 10,
+        backgroundColor: "#FF7F7F"
     }
 });
