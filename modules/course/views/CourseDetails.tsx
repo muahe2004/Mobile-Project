@@ -30,6 +30,12 @@ const CourseDetails: React.FC<{ course: Course }> = ({ course }) => {
   const [pendingCourse, setPendingCourse] = useState<{ id: string; tenKhoaHoc: string; giaBan: number } | null>(null);
 
   useEffect(() => {
+    setPaySuccess(false);
+    setIsPaying(false);
+    setPendingCourse(null);
+  }, []);
+
+  useEffect(() => {
     if (!socket) return;
 
     socket.on("paymentSuccess", (data: any) => {
@@ -115,6 +121,7 @@ const CourseDetails: React.FC<{ course: Course }> = ({ course }) => {
         .finally(() => {
           setIsPaying(false);
           setPendingCourse(null);
+          setPaySuccess(false);
         });
     }
   }, [paySuccess, isPaying, pendingCourse]);

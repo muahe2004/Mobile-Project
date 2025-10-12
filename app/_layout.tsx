@@ -15,21 +15,16 @@ export const SocketContext = createContext<any>(null);
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
+  const [loaded] = useFonts({ SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf')});
   const { user, loading } = useUserInfo();
-  const socket = useSocket(user?.id); // always call hook
+  const socket = useSocket(user?.id);
 
-  // hook phải luôn được gọi trước
   useEffect(() => {
     if (!socket || !user?.id) return;
     socket.emit("registerUser", user.id);
-    console.log("👤 Đăng ký user socket:", user.id);
   }, [socket, user?.id]);
 
-  if (!loaded || loading) return null; // chỉ return JSX, hook đã gọi
+  if (!loaded || loading) return null;
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
@@ -47,6 +42,5 @@ export default function RootLayout() {
     </ThemeProvider>
   );
 }
-
 
 const styles = StyleSheet.create({});
