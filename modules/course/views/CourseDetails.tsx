@@ -1,6 +1,7 @@
-import { SocketContext } from "@/app/_layout"; // import context socket
+import { SocketContext } from "@/app/_layout";
 import Button from "@/components/Button/Button";
 import { useUserInfo } from "@/hooks/useGetUserInfor";
+import { router } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import { Image, Linking, ScrollView, StyleSheet, Text, View } from "react-native";
 import { colors } from "../../../assets/styles/theme";
@@ -26,13 +27,12 @@ const CourseDetails: React.FC<{ course: Course }> = ({ course }) => {
   const socket = useContext(SocketContext); 
   const [paySuccess, setPaySuccess] = useState(false)
   const [isPaying, setIsPaying] = useState(false);
+  const [pendingCourse, setPendingCourse] = useState<{ id: string; tenKhoaHoc: string; giaBan: number } | null>(null);
 
   useEffect(() => {
     if (!socket) return;
 
-    // lắng nghe event từ backend
     socket.on("paymentSuccess", (data: any) => {
-      console.log("💰 Thanh toán thành công realtime:", data);
       setPaySuccess(true);
     });
 
@@ -41,38 +41,25 @@ const CourseDetails: React.FC<{ course: Course }> = ({ course }) => {
       setPaySuccess(false);
     });
 
-    // cleanup
     return () => {
       socket.off("paymentSuccess");
       socket.off("paymentFailed");
     };
   }, [socket]);
   
-  const handleRegister = async (id: string, tenKhoaHoc: string, giaBan: number) => {
-    const payload: IRegisterCourse = {
-      nguoiDungId: user?.id || "", 
-      khoaHocId: id,                                 
-      trangThai: "Đang học",
-    };
+  const handleRegister = (id: string, tenKhoaHoc: string, giaBan: number) => {
+    if (!user?.id) return;
 
-    try {
-      const registerRes = await registerCourse(payload);
-
-      const dangKyId = registerRes.id;
-
-      if (giaBan > 0) {
-        // await addBill(dangKyId);
-        setIsPaying(true); // đánh dấu đang chờ thanh toán
-        momoPayment();
-        // router.replace(`/my-courses/${user?.id}`);
-      } else {
-        // router.replace(`/my-courses/${user?.id}`);
-      }
-
-    } catch (err) {
-      console.error(err);
+    if (giaBan > 0) {
+      setIsPaying(true);
+      setPendingCourse({ id, tenKhoaHoc, giaBan });
+      momoPayment();
+    } else {
+      registerCourse({ nguoiDungId: user.id, khoaHocId: id, trangThai: "Đang học" })
+        .then(() => router.replace(`/my-courses/${user.id}`))
+        .catch(console.error);
     }
-  }
+  };
 
   const momoPayment = async () => {
     try {
@@ -90,10 +77,7 @@ const CourseDetails: React.FC<{ course: Course }> = ({ course }) => {
 
       const data = await res.json();
 
-      console.log(data);
-
       if (data?.payUrl) {
-        // 👉 Điều hướng sang trang MoMo
         await Linking.openURL(data.payUrl);
       } else {
         console.error("Không nhận được payUrl từ MoMo:", data);
@@ -104,33 +88,36 @@ const CourseDetails: React.FC<{ course: Course }> = ({ course }) => {
     }
   }
 
-  // Lắng nghe socket
   useEffect(() => {
     if (!socket) return;
 
-    socket.on("paymentSuccess", (data: any) => {
-      console.log("💰 Thanh toán thành công realtime:", data);
-      setPaySuccess(true);
-    });
+    const handleSuccess = () => setPaySuccess(true);
+    const handleFail = () => setPaySuccess(false);
 
-    socket.on("paymentFailed", (data: any) => {
-      console.log("❌ Thanh toán thất bại realtime:", data);
-      setPaySuccess(false);
-    });
+    socket.on("paymentSuccess", handleSuccess);
+    socket.on("paymentFailed", handleFail);
 
     return () => {
-      socket.off("paymentSuccess");
-      socket.off("paymentFailed");
+      socket.off("paymentSuccess", handleSuccess);
+      socket.off("paymentFailed", handleFail);
     };
   }, [socket]);
 
-  // Thực hiện hành động khi thanh toán thành công và đang trong quá trình thanh toán
   useEffect(() => {
-    if (paySuccess && isPaying) {
-      console.log("🎉 Thanh toán MoMo thành công!");
-      setIsPaying(false); // reset trạng thái
+    if (paySuccess && isPaying && pendingCourse) {
+      registerCourse({
+        nguoiDungId: user!.id,
+        khoaHocId: pendingCourse.id,
+        trangThai: "Đang học",
+      })
+        .then(() => router.replace(`/my-courses/${user!.id}`))
+        .catch(console.error)
+        .finally(() => {
+          setIsPaying(false);
+          setPendingCourse(null);
+        });
     }
-  }, [paySuccess, isPaying]);
+  }, [paySuccess, isPaying, pendingCourse]);
 
   const registerCourse = async (registerCourse: IRegisterCourse)  => {
     try {
@@ -154,33 +141,6 @@ const CourseDetails: React.FC<{ course: Course }> = ({ course }) => {
     }
   }
 
-  const addBill = async (dangKyId: string) => {
-    try {
-      const res = await fetch(`${API_URL}/bills`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          nguoiDungId: user?.id,
-          dangKyId: dangKyId,
-          loaiThanhToan: "Chuyển khoản",
-          soTien: course.giaBan,
-          trangThai: "Chờ thanh toán",
-          ghiChu: `Thanh toán học phí khoá học ${course.tenKhoaHoc}`
-        })
-      });
-
-      if (!res.ok) {
-        throw new Error("Đăng ký thất bại!");
-      }
-
-      const data = await res.json();
-    } catch (error) {
-      console.error("Lỗi khi đăng ký:", error);
-    }
-  }
-
   return (
     <ScrollView style={styles.container}>
       <Image
@@ -192,7 +152,6 @@ const CourseDetails: React.FC<{ course: Course }> = ({ course }) => {
         style={styles.thumbnail}
       />
 
-      {/* Nội dung */}
       <View style={styles.content}>
         <Text style={styles.title}>{course.tenKhoaHoc}</Text>
         <Text style={styles.price}>{course.giaBan.toLocaleString()} VND</Text>
