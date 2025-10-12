@@ -1,8 +1,8 @@
+import { SocketContext } from "@/app/_layout"; // import context socket
 import Button from "@/components/Button/Button";
 import { useUserInfo } from "@/hooks/useGetUserInfor";
-import { router } from 'expo-router';
-import React from "react";
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import { Image, Linking, ScrollView, StyleSheet, Text, View } from "react-native";
 import { colors } from "../../../assets/styles/theme";
 
 type Course = {
@@ -23,6 +23,30 @@ const CourseDetails: React.FC<{ course: Course }> = ({ course }) => {
   const API_URL = process.env.EXPO_PUBLIC_UNILEARN_API;
   const { user, loading } = useUserInfo();
   const userID = user?.id;
+  const socket = useContext(SocketContext); 
+  const [paySuccess, setPaySuccess] = useState(false)
+  const [isPaying, setIsPaying] = useState(false);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    // lắng nghe event từ backend
+    socket.on("paymentSuccess", (data: any) => {
+      console.log("💰 Thanh toán thành công realtime:", data);
+      setPaySuccess(true);
+    });
+
+    socket.on("paymentFailed", (data: any) => {
+      console.log("❌ Thanh toán thất bại realtime:", data);
+      setPaySuccess(false);
+    });
+
+    // cleanup
+    return () => {
+      socket.off("paymentSuccess");
+      socket.off("paymentFailed");
+    };
+  }, [socket]);
   
   const handleRegister = async (id: string, tenKhoaHoc: string, giaBan: number) => {
     const payload: IRegisterCourse = {
@@ -37,16 +61,76 @@ const CourseDetails: React.FC<{ course: Course }> = ({ course }) => {
       const dangKyId = registerRes.id;
 
       if (giaBan > 0) {
-        await addBill(dangKyId);
-        router.replace(`/my-courses/${user?.id}`);
+        // await addBill(dangKyId);
+        setIsPaying(true); // đánh dấu đang chờ thanh toán
+        momoPayment();
+        // router.replace(`/my-courses/${user?.id}`);
       } else {
-        router.replace(`/my-courses/${user?.id}`);
+        // router.replace(`/my-courses/${user?.id}`);
       }
 
     } catch (err) {
       console.error(err);
     }
   }
+
+  const momoPayment = async () => {
+    try {
+      const res = await fetch(`${API_URL}/payment/momo`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          nguoiDungID: user?.id,
+          orderInfo: `Thanh toán khoá học ${course.tenKhoaHoc}`,
+          amount: course.giaBan,
+        })
+      })
+
+      const data = await res.json();
+
+      console.log(data);
+
+      if (data?.payUrl) {
+        // 👉 Điều hướng sang trang MoMo
+        await Linking.openURL(data.payUrl);
+      } else {
+        console.error("Không nhận được payUrl từ MoMo:", data);
+      }
+
+    } catch (error) {
+      console.error("Lỗi khi đăng ký:", error);
+    }
+  }
+
+  // Lắng nghe socket
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("paymentSuccess", (data: any) => {
+      console.log("💰 Thanh toán thành công realtime:", data);
+      setPaySuccess(true);
+    });
+
+    socket.on("paymentFailed", (data: any) => {
+      console.log("❌ Thanh toán thất bại realtime:", data);
+      setPaySuccess(false);
+    });
+
+    return () => {
+      socket.off("paymentSuccess");
+      socket.off("paymentFailed");
+    };
+  }, [socket]);
+
+  // Thực hiện hành động khi thanh toán thành công và đang trong quá trình thanh toán
+  useEffect(() => {
+    if (paySuccess && isPaying) {
+      console.log("🎉 Thanh toán MoMo thành công!");
+      setIsPaying(false); // reset trạng thái
+    }
+  }, [paySuccess, isPaying]);
 
   const registerCourse = async (registerCourse: IRegisterCourse)  => {
     try {
