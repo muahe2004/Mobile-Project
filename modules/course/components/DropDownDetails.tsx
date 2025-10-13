@@ -1,4 +1,5 @@
-import { AntDesign } from "@expo/vector-icons";
+import { useUserInfo } from "@/hooks/useGetUserInfor";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -10,6 +11,7 @@ import {
 
 type DropDownDetailsProps = {
     coursesID: string;
+    isLearning?: boolean;
     onClose?: () => void;
 };
 
@@ -29,20 +31,12 @@ type Lectures = {
   createdAt: string;
 };
 
-type LectureResponse = {
-  data: Lectures[];
-  pagination: {
-    totalItems: number;
-    totalPages: number;
-    currentPage: number;
-    pageSize: number;
-  };
-};
-
-export const DropDownDetails: React.FC<DropDownDetailsProps> = ({ coursesID, onClose }) => {
+export const DropDownDetails: React.FC<DropDownDetailsProps> = ({ coursesID, onClose, isLearning }) => {
     const [lessons, setLessons] = useState<Lesson[]>([]);
     const [openLessons, setOpenLessons] = useState<Record<string, boolean>>({});
     const [lecturesByLesson, setLecturesByLesson] = useState<Record<string, Lectures[]>>({});
+    const [completedLessons, setCompletedLessons] = useState<string[]>([]);
+    const { user } = useUserInfo();
     
     const API_URL = process.env.EXPO_PUBLIC_UNILEARN_API;
     
@@ -81,6 +75,24 @@ export const DropDownDetails: React.FC<DropDownDetailsProps> = ({ coursesID, onC
                 ...prev,
                 [chuongHocId]: json.data
             }));
+            fetchProgress(chuongHocId);
+        } catch (err) {
+            console.error("Fetch error:", err);
+        }
+    };
+
+    const fetchProgress = async (chuongHocId: string) => {
+        try {
+            const res = await fetch(`${API_URL}/progress?nguoiDungId=${user?.id}&chuongHocId=${chuongHocId}`);
+            const json = await res.json();
+
+            if (!res.ok) return;
+
+            const completedIds = json
+            .filter((item: any) => item.daHoanThanh)
+            .map((item: any) => item.baiHocId);
+
+            setCompletedLessons((prev) => [...new Set([...prev, ...completedIds])]); 
         } catch (err) {
             console.error("Fetch error:", err);
         }
@@ -117,12 +129,21 @@ export const DropDownDetails: React.FC<DropDownDetailsProps> = ({ coursesID, onC
                                             style={styles.lectureItem}
                                             onPress={() => {
                                                 router.replace(`/learning/${lec.id}`);
-                                                if (onClose) onClose();  
+                                                if (onClose) onClose();
                                             }}
-                                        >
+                                            >
                                             <Text>
-                                            {index + 1}.{lecIndex + 1}. {lec.tenBaiHoc}
+                                                {index + 1}.{lecIndex + 1}. {lec.tenBaiHoc}
                                             </Text>
+
+                                            {isLearning && (
+                                                <Ionicons
+                                                    name="checkmark-circle"
+                                                    size={20}
+                                                    color={completedLessons.includes(lec.id) ? "#22c55e" : "#9ca3af"}
+                                                    style={{ marginLeft: 6 }}
+                                                />
+                                            )}
                                         </TouchableOpacity>
                                     ))
                                 ) : (
@@ -168,6 +189,9 @@ const styles = StyleSheet.create({
         marginBottom: 2,
         backgroundColor: "#eee",
         paddingVertical: 12,
-        paddingLeft: 24
+        paddingLeft: 24,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        paddingRight: 12
     }
 });
