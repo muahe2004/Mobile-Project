@@ -12,7 +12,6 @@ import CourseDetails from "../../../modules/course/views/CourseDetails";
 export default function CourseDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [course, setCourse] = useState<Courses | null>(null);
-  
 
   const API_URL = process.env.EXPO_PUBLIC_UNILEARN_API;
 
@@ -24,8 +23,6 @@ export default function CourseDetailsScreen() {
       })
       .catch((err) => console.error("Error fetching courses:", err));
   }, [id]);
-
-  
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff", marginBottom: 100 }}>

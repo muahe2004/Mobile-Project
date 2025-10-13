@@ -1,6 +1,7 @@
 import { SocketContext } from "@/app/_layout";
 import Button from "@/components/Button/Button";
 import { useUserInfo } from "@/hooks/useGetUserInfor";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import { Image, Linking, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -28,6 +29,7 @@ const CourseDetails: React.FC<{ course: Course }> = ({ course }) => {
   const [paySuccess, setPaySuccess] = useState(false)
   const [isPaying, setIsPaying] = useState(false);
   const [pendingCourse, setPendingCourse] = useState<{ id: string; tenKhoaHoc: string; giaBan: number } | null>(null);
+  const [registered, setRegistered] = useState(false);
 
   useEffect(() => {
     setPaySuccess(false);
@@ -148,6 +150,36 @@ const CourseDetails: React.FC<{ course: Course }> = ({ course }) => {
     }
   }
 
+  const checkRegistered = async (courseID: string) => {
+    try {
+      if (!courseID) return;
+
+      const jsonValue = await AsyncStorage.getItem("userCourses");
+      if (!jsonValue) {
+        return;
+      }
+
+      const courseList = JSON.parse(jsonValue);
+
+      const isRegistered = courseList.some(
+        (course: any) => course.khoaHocId === courseID
+      );
+
+      if (isRegistered) {
+        setRegistered(true);
+      } else {
+        setRegistered(false);
+      }
+
+    } catch (error) {
+      console.error("Lỗi khi kiểm tra khóa học:", error);
+    }
+  };
+
+  useEffect(() => {
+    checkRegistered(course.id);
+  }, [course.id])
+
   return (
     <ScrollView style={styles.container}>
       <Image
@@ -163,7 +195,10 @@ const CourseDetails: React.FC<{ course: Course }> = ({ course }) => {
         <Text style={styles.title}>{course.tenKhoaHoc}</Text>
         <Text style={styles.price}>{course.giaBan.toLocaleString()} VND</Text>
 
-        <Button content="ĐĂNG KÝ" onPress={() => handleRegister(course.id, course.tenKhoaHoc, course.giaBan)}/>
+        {
+          !registered && (<Button content="ĐĂNG KÝ" onPress={() => handleRegister(course.id, course.tenKhoaHoc, course.giaBan)}/>)
+        }
+
       </View>      
     </ScrollView>
   );
