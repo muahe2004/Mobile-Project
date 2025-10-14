@@ -1,6 +1,7 @@
 import Button from "@/components/Button/Button";
 import Header from "@/components/Header/Header";
 import { useUserInfo } from "@/hooks/useGetUserInfor";
+import { LearningChatBot } from "@/modules/course/components/LearningChatBot";
 import { LearningNavigation } from "@/modules/course/components/LearningNavigation";
 import { QuestionBox } from "@/modules/course/components/QuestionBox";
 import { Lectures, ListQuestions } from "@/modules/course/types";
@@ -23,6 +24,7 @@ export default function LearningScreen() {
     const [videoID, setVideoID] = useState("");
     const [duration, setDuration] = useState<number | null>(null);
     const [openMenu, setOpenMenu] = useState(false);
+    const [openChat, setOpenChat] = useState(false);
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     const API_URL = process.env.EXPO_PUBLIC_UNILEARN_API;
@@ -111,6 +113,10 @@ export default function LearningScreen() {
         setOpenMenu(true); 
     };
 
+    const handleChat = () => {
+        setOpenChat(true); 
+    };
+
     const handlePlayVideo = (state: string) => {
         if (state === "playing") {
             checkVideoProgress();
@@ -188,7 +194,7 @@ export default function LearningScreen() {
             <View style={styles.learningActions}>
                 <Button
                     icon={<MaterialCommunityIcons name="robot" size={18} color="#fff" />}
-                    onPress={handleMenu}
+                    onPress={handleChat}
                 />
                 <Button
                     icon={<Ionicons name="menu" size={18} color="#fff" />}
@@ -197,6 +203,7 @@ export default function LearningScreen() {
             </View>
 
             <LearningNavigation open={openMenu} onClose={() => setOpenMenu(false)}/>
+            <LearningChatBot open={openChat} onClose={() => setOpenChat(false)}/>
         </SafeAreaView>
     );
 }
