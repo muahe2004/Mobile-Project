@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import Header from "@/components/Header/Header";
 import { Courses } from "@/modules/course/types";
+import { checkRegistered } from "@/modules/course/utils/checkRegistered";
 import { useEffect, useState } from "react";
 import ParallaxScrollView from "../../../components/ParallaxScrollView";
 import DropDownDetails from "../../../modules/course/components/DropDownDetails";
@@ -12,6 +13,8 @@ import CourseDetails from "../../../modules/course/views/CourseDetails";
 export default function CourseDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [course, setCourse] = useState<Courses | null>(null);
+  const [registered, setRegistered] = useState(false);
+  const isRegistered = registered;
 
   const API_URL = process.env.EXPO_PUBLIC_UNILEARN_API;
 
@@ -22,6 +25,13 @@ export default function CourseDetailsScreen() {
         setCourse(data);
       })
       .catch((err) => console.error("Error fetching courses:", err));
+  }, [id]);
+
+  useEffect(() => {
+    (async () => {
+      const isRegistered = await checkRegistered(id);
+      setRegistered(isRegistered);
+    })();
   }, [id]);
 
   return (
@@ -40,7 +50,7 @@ export default function CourseDetailsScreen() {
           }}
         />
 
-        <DropDownDetails coursesID={id} />
+        <DropDownDetails isLearning isRegistered={isRegistered} coursesID={id} />
       </ParallaxScrollView>
     </SafeAreaView>
   );

@@ -31,7 +31,7 @@ export const LearningNavigation: React.FC<LearningNavigationProps & { onClose: (
                 />
 
                 <ScrollView>
-                    <DropDownDetails onClose={onClose} isLearning coursesID={"f8b63e7d-87ed-4b4d-90b0-957b0a5745c0"} />
+                    <DropDownDetails onClose={onClose} isLearning isRegistered coursesID={"f8b63e7d-87ed-4b4d-90b0-957b0a5745c0"} />
                 </ScrollView>
             </View>
         </Animated.View>

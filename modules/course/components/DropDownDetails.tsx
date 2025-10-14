@@ -12,6 +12,7 @@ import {
 type DropDownDetailsProps = {
     coursesID: string;
     isLearning?: boolean;
+    isRegistered?: boolean;
     onClose?: () => void;
 };
 
@@ -21,17 +22,17 @@ export interface Lesson {
 }
 
 type Lectures = {
-  id: string;
-  tenBaiHoc: string;
-  moTaBaiHoc: string;
-  video: string;
-  chuongHocId: string;
-  trangThai: string;
-  updatedAt: string;
-  createdAt: string;
+    id: string;
+    tenBaiHoc: string;
+    moTaBaiHoc: string;
+    video: string;
+    chuongHocId: string;
+    trangThai: string;
+    updatedAt: string;
+    createdAt: string;
 };
 
-export const DropDownDetails: React.FC<DropDownDetailsProps> = ({ coursesID, onClose, isLearning }) => {
+export const DropDownDetails: React.FC<DropDownDetailsProps> = ({ coursesID, onClose, isLearning, isRegistered }) => {
     const [lessons, setLessons] = useState<Lesson[]>([]);
     const [openLessons, setOpenLessons] = useState<Record<string, boolean>>({});
     const [lecturesByLesson, setLecturesByLesson] = useState<Record<string, Lectures[]>>({});
@@ -136,7 +137,7 @@ export const DropDownDetails: React.FC<DropDownDetailsProps> = ({ coursesID, onC
                                                 {index + 1}.{lecIndex + 1}. {lec.tenBaiHoc}
                                             </Text>
 
-                                            {isLearning && (
+                                            {isLearning && isRegistered && (
                                                 <Ionicons
                                                     name="checkmark-circle"
                                                     size={20}

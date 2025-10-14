@@ -86,9 +86,8 @@ export default function LearningScreen() {
 
             const progress = (current / duration) * 100;
 
-            if (progress >= 5) {
+            if (progress >= 80) {
                 clearInterval(intervalRef.current!);
-                // add progress
                 handleAddProgress();
             }
         }, frequency);
@@ -143,7 +142,6 @@ export default function LearningScreen() {
 
             const data = await res.json();
             // console.log("Tiến độ đã được lưu:", data);
-
         } catch (error) {
             console.error("Lỗi khi cập nhật tiến độ học!");
         }

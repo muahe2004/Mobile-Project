@@ -1,11 +1,11 @@
 import { SocketContext } from "@/app/_layout";
 import Button from "@/components/Button/Button";
 import { useUserInfo } from "@/hooks/useGetUserInfor";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import { Image, Linking, ScrollView, StyleSheet, Text, View } from "react-native";
 import { colors } from "../../../assets/styles/theme";
+import { checkRegistered } from "../utils/checkRegistered";
 
 type Course = {
   id: string;
@@ -150,35 +150,12 @@ const CourseDetails: React.FC<{ course: Course }> = ({ course }) => {
     }
   }
 
-  const checkRegistered = async (courseID: string) => {
-    try {
-      if (!courseID) return;
-
-      const jsonValue = await AsyncStorage.getItem("userCourses");
-      if (!jsonValue) {
-        return;
-      }
-
-      const courseList = JSON.parse(jsonValue);
-
-      const isRegistered = courseList.some(
-        (course: any) => course.khoaHocId === courseID
-      );
-
-      if (isRegistered) {
-        setRegistered(true);
-      } else {
-        setRegistered(false);
-      }
-
-    } catch (error) {
-      console.error("Lỗi khi kiểm tra khóa học:", error);
-    }
-  };
-
   useEffect(() => {
-    checkRegistered(course.id);
-  }, [course.id])
+    (async () => {
+      const isRegistered = await checkRegistered(course.id);
+      setRegistered(isRegistered);
+    })();
+  }, [course.id]);
 
   return (
     <ScrollView style={styles.container}>
