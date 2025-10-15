@@ -9,13 +9,13 @@ import { extractYoutubeId } from "@/modules/course/utils/getVideoID";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import YoutubePlayer from "react-native-youtube-iframe";
 import { colors } from "../../../assets/styles/theme";
 
 export default function LearningScreen() {
-    const { id } = useLocalSearchParams<{ id: string }>();
+    const { id, khoaHocId } = useLocalSearchParams<{ id: string; khoaHocId: string }>();
     const playerRef = useRef<any>(null);
     const { user, loading } = useUserInfo();
 
@@ -147,11 +147,35 @@ export default function LearningScreen() {
             }
 
             const data = await res.json();
-            // console.log("Tiến độ đã được lưu:", data);
+            checkDone(khoaHocId, userID);
         } catch (error) {
             console.error("Lỗi khi cập nhật tiến độ học!");
         }
     }
+
+    const checkDone = async (khoaHocId: string, nguoiDungID: string) => {
+        try {
+            const res = await fetch(`${API_URL}/registered-courses/check-done?khoaHocID=${khoaHocId}&nguoiDungID=${nguoiDungID}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!res.ok) throw new Error("Request failed");
+
+            const data = await res.json();
+            const daHoanThanh = data.hoanThanhKhoaHoc;
+            if (daHoanThanh) {
+                Alert.alert("Thông báo", "Bạn đã hoàn thành khoá học!!!");
+            } else {
+                console.log("Học tiếp đi con!");
+            }
+            return data;
+        } catch (error) {
+            console.error("Lỗi khi kiểm tra tiến độ học tập:", error);
+        }
+    };
 
     return (
         <SafeAreaView key={id} style={{ flex: 1, backgroundColor: "#fff", marginBottom: 80 }}>
@@ -186,7 +210,7 @@ export default function LearningScreen() {
                 <Text style={styles.learningTitle}>Câu hỏi ôn tập</Text>
 
                 {questions?.map((ques, index) => (
-                <QuestionBox key={ques.id} question={ques} index={index + 1} />
+                    <QuestionBox key={ques.id} question={ques} index={index + 1} />
                 ))}
 
             </ScrollView>
@@ -202,7 +226,7 @@ export default function LearningScreen() {
                 />
             </View>
 
-            <LearningNavigation open={openMenu} onClose={() => setOpenMenu(false)}/>
+            <LearningNavigation courseID={khoaHocId} open={openMenu} onClose={() => setOpenMenu(false)}/>
             <LearningChatBot open={openChat} onClose={() => setOpenChat(false)}/>
         </SafeAreaView>
     );

@@ -129,9 +129,13 @@ export const DropDownDetails: React.FC<DropDownDetailsProps> = ({ coursesID, onC
                                             key={lec.id}
                                             style={styles.lectureItem}
                                             onPress={() => {
-                                                router.replace(`/learning/${lec.id}`);
+                                                router.replace({
+                                                    pathname: "/learning/[id]",
+                                                    params: { id: lec.id, khoaHocId: coursesID },
+                                                });
                                                 if (onClose) onClose();
                                             }}
+
                                             >
                                             <Text>
                                                 {index + 1}.{lecIndex + 1}. {lec.tenBaiHoc}

@@ -8,9 +8,10 @@ const { width, height } = Dimensions.get("window");
 
 interface LearningNavigationProps {
     open: boolean;
+    courseID: string;
 }
 
-export const LearningNavigation: React.FC<LearningNavigationProps & { onClose: () => void }> = ({ open, onClose }) => {
+export const LearningNavigation: React.FC<LearningNavigationProps & { onClose: () => void }> = ({ open, onClose, courseID }) => {
     const slideAnim = useRef(new Animated.Value(width)).current; 
 
     useEffect(() => {
@@ -31,7 +32,7 @@ export const LearningNavigation: React.FC<LearningNavigationProps & { onClose: (
                 />
 
                 <ScrollView>
-                    <DropDownDetails onClose={onClose} isLearning isRegistered coursesID={"f8b63e7d-87ed-4b4d-90b0-957b0a5745c0"} />
+                    <DropDownDetails onClose={onClose} isLearning isRegistered coursesID={courseID} />
                 </ScrollView>
             </View>
         </Animated.View>
