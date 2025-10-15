@@ -1,57 +1,22 @@
 import { colors } from "@/assets/styles/theme";
 import Button from "@/components/Button/Button";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useEffect, useRef } from "react";
-import { Animated, Dimensions, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { Animated, Dimensions, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 const { width, height } = Dimensions.get("window");
 
 interface LearningChatBotProps {
-  open: boolean;
+    open: boolean;
 }
 
-const contentsChat = [
-  {
-    role: "user",
-    parts: [{ text: "Xin chào, bạn có thể giới thiệu về mình không?" }]
-  },
-  {
-    role: "model",
-    parts: [
-      {
-        text: "Chào bạn! Tôi là Gemini — một mô hình ngôn ngữ tiên tiến do Google phát triển. Tôi có thể trò chuyện, viết thơ, tạo nội dung và giúp bạn giải quyết nhiều vấn đề khác nhau. 😊"
-      }
-    ]
-  },
-  {
-    role: "user",
-    parts: [{ text: "Hay quá, bạn có thể kể cho tôi nghe một câu chuyện ngắn về mùa thu không?" }]
-  },
-  {
-    role: "model",
-    parts: [
-      {
-        text: "Tất nhiên rồi 🍁\n\nMột buổi sáng mùa thu, khi những chiếc lá vàng rơi nhẹ xuống con đường nhỏ, cô bé An mang theo chiếc giỏ mây đi hái quả hồng. Mỗi bước chân vang lên giữa khoảng trời trong vắt, gió khẽ đưa hương thơm của hoa cúc. Trong khoảnh khắc ấy, An nhận ra rằng mùa thu không chỉ đẹp — mà còn mang đến cảm giác bình yên lạ kỳ."
-      }
-    ]
-  },
-  {
-    role: "user",
-    parts: [{ text: "Bạn viết hay thật đó! Giờ hãy tóm tắt lại câu chuyện trên trong 1 câu giúp tôi." }]
-  },
-  {
-    role: "model",
-    parts: [
-      {
-        text: "Câu chuyện kể về cô bé An cảm nhận vẻ đẹp và sự bình yên của mùa thu qua hành trình hái hồng sáng sớm."
-      }
-    ]
-  }
-];
-
 export const LearningChatBot: React.FC<LearningChatBotProps & { onClose: () => void }> = ({ open, onClose }) => {
-
+    const API_URL = process.env.EXPO_PUBLIC_UNILEARN_API;
     const slideAnim = useRef(new Animated.Value(width)).current;
+    const [message, setMessage] = useState("");
+    const [contents, setContents] = useState([ { role: "model", parts: [{ text: "Xin chào, tôi là UniGemini!" }]}]);
+    const [canCallAI, setCanCallAI] = useState(false);
+    const scrollViewRef = useRef<ScrollView>(null);
 
     useEffect(() => {
         Animated.timing(slideAnim, {
@@ -60,6 +25,86 @@ export const LearningChatBot: React.FC<LearningChatBotProps & { onClose: () => v
             useNativeDriver: true
         }).start();
     }, [open]);
+
+    const handleSendChat = () => {
+        if (!message.trim()) return;
+
+        const newMessage = {
+            role: "user",
+            parts: [{ text: message }]
+        };
+
+        setContents(prev => {
+            const next = [...prev, newMessage];
+            return next;
+        });
+
+        setCanCallAI(true);
+
+        setMessage("");
+        Keyboard.dismiss();
+    };
+
+    useEffect(() => {
+        if (!canCallAI) return;
+
+        const abortController = new AbortController();
+        const signal = abortController.signal;
+
+        (async () => {
+            try {
+                const payload = { contents };
+
+                const res = await fetch(`${API_URL}/AIChat`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+                    signal,
+                });
+
+                if (!res.ok) {
+                    const error = await res.json().catch(() => ({ message: "Không thể parse lỗi" }));
+                    console.error("Call AI failed!", error);
+                    setCanCallAI(false);
+                    return;
+                }
+
+                const data = await res.json().catch(() => null);
+
+                if (data?.reply) {
+                    const cleanText = data.reply.trim().replace(/\n+/g, "\n");
+                    setContents(prev => [
+                        ...prev,
+                        { role: "model", parts: [{ text: cleanText }] }
+                    ]);
+                } else {
+                    setContents(prev => [
+                        ...prev,
+                        { role: "model", parts: [{ text: "Mình chưa thể hiểu yêu cầu của bạn..." }] }
+                    ]);
+                }
+
+            } catch (error: any) {
+                if (error.name === "AbortError") {
+                    console.log("Request bị huỷ");
+                } else {
+                    console.error("Lỗi khi gọi Gemini:", error);
+                }
+            } finally {
+                setCanCallAI(false);
+            }
+        })();
+
+        return () => abortController.abort();
+    }, [canCallAI]);
+
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            scrollViewRef.current?.scrollToEnd({ animated: true });
+        }, 100); 
+
+        return () => clearTimeout(timeout);
+    }, [contents]); 
 
     return (
         <Animated.View style={[styles.menu, { transform: [{ translateX: slideAnim }] }]}>
@@ -76,6 +121,7 @@ export const LearningChatBot: React.FC<LearningChatBotProps & { onClose: () => v
                     keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
                 >
                     <ScrollView
+                    ref={scrollViewRef}
                         style={{
                             flex: 1,
                             paddingHorizontal: 12,
@@ -84,7 +130,7 @@ export const LearningChatBot: React.FC<LearningChatBotProps & { onClose: () => v
                         }}
                         showsVerticalScrollIndicator={false}
                         >
-                        {contentsChat.map((msg, index) => (
+                        {contents.map((msg, index) => (
                             <View
                             key={index}
                             style={[
@@ -113,12 +159,15 @@ export const LearningChatBot: React.FC<LearningChatBotProps & { onClose: () => v
 
                     <View style={styles.inputContainer}>
                         <TextInput
-                            style={styles.input}
-                            placeholder="Nhập tin nhắn..."
-                            multiline
+                        style={styles.input}
+                        placeholder="Nhập tin nhắn..."
+                        placeholderTextColor="#888"
+                        multiline
+                        value={message}
+                        onChangeText={setMessage}
                         />
-                        <TouchableOpacity style={styles.sendButton}>
-                            <Ionicons name="send" size={20} color="#fff" />
+                        <TouchableOpacity style={styles.sendButton} onPress={handleSendChat}>
+                        <Ionicons name="send" size={20} color="#fff" />
                         </TouchableOpacity>
                     </View>
                 </KeyboardAvoidingView>
@@ -207,13 +256,13 @@ const styles = StyleSheet.create({
         padding: 10,
         borderWidth: 1,
         borderColor: "#ddd",
-        borderRadius: 20,
+        borderRadius: 8,
         fontSize: 15,
         backgroundColor: "#fafafa",
         maxHeight: 100
     },
     sendButton: {
-        backgroundColor: "#0078ff",
+        backgroundColor: colors.primary,
         padding: 10,
         borderRadius: 20,
         marginLeft: 8
