@@ -167,7 +167,7 @@ export default function LearningScreen() {
             const data = await res.json();
             const daHoanThanh = data.hoanThanhKhoaHoc;
             if (daHoanThanh) {
-                Alert.alert("Thông báo", "Bạn đã hoàn thành khoá học!!!");
+                markDoneCourse(khoaHocId, nguoiDungID);
             } else {
                 console.log("Học tiếp đi con!");
             }
@@ -176,6 +176,25 @@ export default function LearningScreen() {
             console.error("Lỗi khi kiểm tra tiến độ học tập:", error);
         }
     };
+
+    const markDoneCourse = async (khoaHocId: string, nguoiDungID: string) => {
+        try {
+            const res = await fetch(`${API_URL}/registered-courses/mark-done?khoaHocID=${khoaHocId}&nguoiDungID=${nguoiDungID}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!res.ok) throw new Error("Request failed");
+
+            const data = await res.json();
+            Alert.alert("Thông báo", "Bạn đã hoàn thành khoá học!!!");
+            return data;
+        } catch (error) {
+            console.error("Lỗi khi kiểm tra tiến độ học tập:", error);
+        }
+    }
 
     return (
         <SafeAreaView key={id} style={{ flex: 1, backgroundColor: "#fff", marginBottom: 80 }}>
