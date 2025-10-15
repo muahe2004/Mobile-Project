@@ -37,6 +37,15 @@ const MyCourses: React.FC = () => {
         chunkedCourses.push(chunk);
     }
 
+    const handleCheckDone = (trangThai: string) => {
+        if (!trangThai || trangThai === null || trangThai === undefined) {
+            return false;
+        }
+        if (trangThai === "Hoàn thành") {
+            return true;
+        }
+    }
+
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: "#fafafa", marginBottom: 80 }}>
             <Stack.Screen options={{ headerShown: false}}/>
@@ -57,6 +66,8 @@ const MyCourses: React.FC = () => {
                                         : undefined,
                                     }}
                                     onPress={() => router.push(`/course-details/${course.khoaHocId}`)}
+                                    markDone={handleCheckDone(course.trangThai)}
+                                    registered
                                 />
                                 ) : (
                                 <View key={colIndex} style={{ flex: 1 }} /> 

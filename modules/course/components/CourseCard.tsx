@@ -23,6 +23,8 @@ type CourseCardProps = {
   onPress?: (e?: GestureResponderEvent) => void;
   onBookmark?: (e?: GestureResponderEvent) => void;
   style?: object;
+  markDone?: boolean;
+  registered?: boolean;
 };
 
 const CourseCard: React.FC<CourseCardProps> = ({
@@ -36,6 +38,8 @@ const CourseCard: React.FC<CourseCardProps> = ({
   onPress,
   onBookmark,
   style,
+  markDone,
+  registered
 }) => {
   const renderStars = (r: number) => {
     const stars = [];
@@ -54,7 +58,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
   };
 
   return (
-    <TouchableOpacity activeOpacity={0.85} style={[styles.card, style]} onPress={onPress}>
+    <TouchableOpacity activeOpacity={0.85} style={[styles.card, style, markDone && styles.doneBorder,]} onPress={onPress}>
       <Image
         source={thumbnail ?? require("../../../assets/images/javascript_course.png")}
         style={styles.thumbnail}
@@ -76,26 +80,27 @@ const CourseCard: React.FC<CourseCardProps> = ({
         </View>
 
         <View style={styles.bottomRow}>
-          <Text style={styles.price}>
-            {price
-              ? parseFloat(price)       
-                  .toLocaleString("vi-VN")
-              : "Free"} VNĐ
-          </Text>
-
-
-          <View style={styles.actions}>
-            {typeof progress === "number" ? (
-              <View style={styles.progressContainer}>
-                <View style={[styles.progressBar, { width: `${Math.max(0, Math.min(100, progress))}%` }]} />
-              </View>
-            ) : null}
-
-            <TouchableOpacity onPress={onBookmark} style={styles.bookmarkBtn} hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}>
-              <Ionicons name="bookmark-outline" size={20} color="#333" />
-            </TouchableOpacity>
-          </View>
+          {
+            !registered && (
+              <Text style={styles.price}>
+                {price
+                  ? parseFloat(price)       
+                      .toLocaleString("vi-VN")
+                  : "Free"} VNĐ
+              </Text>
+            )
+          }
         </View>
+        {
+          markDone && (
+            <Ionicons
+              name="checkmark-circle"
+              size={32}
+              color="#22c55e"
+              style={styles.markDone}
+            />
+          )
+        }
       </View>
     </TouchableOpacity>
   );
@@ -104,7 +109,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
 export default CourseCard;
 
 const styles = StyleSheet.create({
-   card: {
+  card: {
     flex: 1, 
     margin: 8,
     backgroundColor: "#fff",
@@ -114,6 +119,12 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
+    borderWidth: 2,
+    borderColor: "#fff", 
+  },
+  doneBorder: {
+    borderWidth: 2,
+    borderColor: "#00b894",
   },
   thumbnail: {
     width: "100%",
@@ -153,6 +164,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     marginTop: 8,
+  },
+  markDone: {
+    position: "absolute",
+    right: 5,
+    bottom: 5,
   },
   price: {
     fontSize: 14,
