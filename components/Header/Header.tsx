@@ -1,7 +1,8 @@
 import { useUser } from "@/contexts/useContextUser";
+import { SearchCourse } from "@/modules/course/components/SearchCourse";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { router } from 'expo-router';
-import React from "react";
+import React, { useState } from "react";
 import {
     StyleSheet,
     Text,
@@ -15,10 +16,11 @@ import HeaderMenu from "./HeaderMenu";
 const Header: React.FC = () => {
     const backHome = () => router.push("/");
     const { user, clearUser } = useUser();
+    const [searchValue, setSearchValue] = useState("");
 
     const goToLogin = () => {
         router.push("/login");
-      };
+    };
 
     return (
         <View style={styles.container}>
@@ -31,6 +33,7 @@ const Header: React.FC = () => {
                 <TextInput
                     keyboardType="default"
                     style={styles.textInput}
+                    onChangeText={(text)=> {setSearchValue(text)}}
                 />
             </View>
 
@@ -58,6 +61,8 @@ const Header: React.FC = () => {
                     />
                 </TouchableOpacity>
             )}
+
+            <SearchCourse values={searchValue}></SearchCourse>
         </View>
     );
 };
