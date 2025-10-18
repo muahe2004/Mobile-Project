@@ -50,7 +50,7 @@ export default function CourseDetailsScreen() {
           }}
         />
 
-        <DropDownDetails isLearning isRegistered={isRegistered} coursesID={id} />
+        <DropDownDetails isLearning isRegistered={isRegistered} coursesID={id} courseName={course?.tenKhoaHoc}/>
       </ParallaxScrollView>
     </SafeAreaView>
   );

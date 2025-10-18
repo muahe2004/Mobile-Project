@@ -5,6 +5,7 @@ import { LearningChatBot } from "@/modules/course/components/LearningChatBot";
 import { LearningNavigation } from "@/modules/course/components/LearningNavigation";
 import { QuestionBox } from "@/modules/course/components/QuestionBox";
 import { Lectures, ListQuestions } from "@/modules/course/types";
+import { getCertificate } from "@/modules/course/utils/getCertificate";
 import { extractYoutubeId } from "@/modules/course/utils/getVideoID";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams } from "expo-router";
@@ -15,7 +16,7 @@ import YoutubePlayer from "react-native-youtube-iframe";
 import { colors } from "../../../assets/styles/theme";
 
 export default function LearningScreen() {
-    const { id, khoaHocId } = useLocalSearchParams<{ id: string; khoaHocId: string }>();
+    const { id, khoaHocId, courseName } = useLocalSearchParams<{ id: string; khoaHocId: string, courseName: string }>();
     const playerRef = useRef<any>(null);
     const { user, loading } = useUserInfo();
 
@@ -88,7 +89,7 @@ export default function LearningScreen() {
 
             const progress = (current / duration) * 100;
 
-            if (progress >= 80) {
+            if (progress >= 1) {
                 clearInterval(intervalRef.current!);
                 handleAddProgress();
             }
@@ -189,12 +190,37 @@ export default function LearningScreen() {
             if (!res.ok) throw new Error("Request failed");
 
             const data = await res.json();
-            Alert.alert("Thông báo", "Bạn đã hoàn thành khoá học!!!");
+            const bodyCertificate = {
+                fullName: user?.name,
+                courseName: courseName,
+                completedDate: new Date().toLocaleDateString("en-GB"),
+            }
+            console.log("📦 body gửi lên:", bodyCertificate);
+
+            // Alert.alert("Thông báo", "Bạn đã hoàn thành khoá học!!!");
+            Alert.alert(
+                "Thông báo",
+                "Bạn đã hoàn thành khoá học!!!",
+                [
+                    {
+                    text: "Đóng",
+                        onPress: () => console.log("Đã hủy"), // hoặc gọi hàm khác
+                    style: "cancel"
+                    },
+                    {
+                    text: "Xem chứng chỉ",
+                    onPress: () => getCertificate(bodyCertificate), // gọi function của bạn
+                    }
+                ],
+                { cancelable: false }
+                );
+
             return data;
         } catch (error) {
             console.error("Lỗi khi kiểm tra tiến độ học tập:", error);
         }
     }
+
 
     return (
         <SafeAreaView key={id} style={{ flex: 1, backgroundColor: "#fff", marginBottom: 80 }}>

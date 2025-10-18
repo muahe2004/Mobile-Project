@@ -11,6 +11,7 @@ import {
 
 type DropDownDetailsProps = {
     coursesID: string;
+    courseName?: string;
     isLearning?: boolean;
     isRegistered?: boolean;
     onClose?: () => void;
@@ -32,7 +33,7 @@ type Lectures = {
     createdAt: string;
 };
 
-export const DropDownDetails: React.FC<DropDownDetailsProps> = ({ coursesID, onClose, isLearning, isRegistered }) => {
+export const DropDownDetails: React.FC<DropDownDetailsProps> = ({ coursesID, onClose, isLearning, isRegistered, courseName }) => {
     const [lessons, setLessons] = useState<Lesson[]>([]);
     const [openLessons, setOpenLessons] = useState<Record<string, boolean>>({});
     const [lecturesByLesson, setLecturesByLesson] = useState<Record<string, Lectures[]>>({});
@@ -131,7 +132,7 @@ export const DropDownDetails: React.FC<DropDownDetailsProps> = ({ coursesID, onC
                                             onPress={() => {
                                                 router.replace({
                                                     pathname: "/learning/[id]",
-                                                    params: { id: lec.id, khoaHocId: coursesID },
+                                                    params: { id: lec.id, khoaHocId: coursesID, courseName: courseName },
                                                 });
                                                 if (onClose) onClose();
                                             }}
